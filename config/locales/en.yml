@@ -30,4 +30,14 @@
 # available at http://guides.rubyonrails.org/i18n.html.
 
 en:
-  hello: "Hello world"
+  errors:
+    auth_code_required: 'authentication code is required'
+    auth_code_invalid: 'a valid authentication code is required'
+    auth_code_redirect_url_required: 'a valid redirect url is required'
+    auth_code_expired: 'authorization code is expired'
+    auth_code_invalid_client_or_secret: 'a valid client id or secret is required'
+    auth_code_invalid_client: 'a valid client id is required'
+  titles:
+    grant_types:
+        auth_code_error: 'Authorization code'
+
