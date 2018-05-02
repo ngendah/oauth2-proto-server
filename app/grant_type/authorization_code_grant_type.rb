@@ -12,7 +12,7 @@ class AuthorizationCodeGrantType < GrantType
     @errors = []
   end
 
-  def grant_type_name
+  def type_name
     'authorization_code_grant_type'
   end
 
@@ -41,15 +41,29 @@ class AuthorizationCodeGrantType < GrantType
     if auth_code.nil?
       client = Client.find_by_uid client_id
       redirect_url = URI.decode(redirect_url)
-      token = TokenGenerator.token opts: { length: 16 }
+      redirect_url = client.redirect_url if redirect_url.nil?
+      token = TokenGenerator.token :default, { length: 16 }
       auth_code = AuthorizationCode.create(
         code: token[:access_token], client: client,
         redirect_url: redirect_url, expires: token[:expires_in])
     end
-    "#{auth_code.redirect_url}?code=#{auth_code.code}"
+    redirect_url = auth_code.client.redirect_url if redirect_url.nil?
+    raise StandardError('redirect url not specified') if redirect_url.nil?
+    "#{redirect_url}?code=#{auth_code.code}"
   end
 
-  def access_token(authorization_code, refresh_required = false)
+  def token(authorization_code, refresh_required)
+    token = access_token authorization_code
+    if refresh_required
+      ref_token = refresh_token authorization_code
+      token[:refresh_token] = ref_token[:access_token]
+    end
+    token
+  end
+
+  protected
+
+  def access_token(authorization_code)
     auth_code = AuthorizationCode.find_by_code authorization_code
     auth_code.delete_expired_tokens
     token = auth_code.token
@@ -60,32 +74,35 @@ class AuthorizationCodeGrantType < GrantType
     else
       token = { access_token: token.token, expires_in: token.expires }
     end
-    if refresh_required
-      refresh_token = auth_code.refresh_token
-      if refresh_token.nil? || refresh_token.expired?
-        refresh_token = TokenGenerator.token
-        auth_code.access_tokens << AccessToken.create(
-          token: refresh_token[:access_token],
-          refresh: true,
-          expires: refresh_token[:expires])
-        token[:refresh_token] = refresh_token[:acess_token]
-      else
-        token[:refresh_token] = refresh_token.token
-      end
-    end
     token
   end
 
-  protected
+  def refresh_token(authorization_code, expires_in = 20.minutes)
+    auth_code = AuthorizationCode.find_by_code authorization_code
+    refresh_token = auth_code.refresh_token
+    if refresh_token.nil? || refresh_token.expired?
+      refresh_token = TokenGenerator.token :default, { timedelta: expires_in }
+      auth_code.access_tokens << AccessToken.create(
+        token: refresh_token[:access_token],
+        refresh: true,
+        expires: refresh_token[:expires_in])
+    else
+      refresh_token = { access_token: refresh_token.token,
+                        expires_in: refresh_token.expires }
+    end
+    refresh_token
+  end
 
   def validate_client(params)
+     # TODO: check if client can has been allowed to use this grant type
     errors = []
     client = Client.find_by_uid params[:client_id]
     errors.append(t_err(:auth_code_invalide_client)) if client.nil?
     redirect_url = params[:redirect_url]
-    # TODO: check if client can has been allowed to use this grant type
-    errors.append(
-      t_err(:auth_code_redirect_url_required)) if redirect_url.nil?
+    # TODO: check its a valid url
+    if redirect_url.nil? || client.redirect_url.nil?
+      errors.append(t_err(:auth_code_redirect_url_required))
+    end
     errors
   end
 

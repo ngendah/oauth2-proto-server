@@ -1,4 +1,4 @@
-requires 'http_error'
+require 'http_errors'
 
 class ApplicationController < ActionController::API
 

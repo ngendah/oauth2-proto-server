@@ -10,15 +10,11 @@ class GrantType
     raise NotImplementedError
   end
 
-  def access_token(opts={})
-    raise NotImplementedError
+  def token(opts={})
+     raise NotImplementedError
   end
 
-  def refresh_token(opts={})
-    raise NotImplementedError
-  end
-
-  def grant_type_name
+  def type_name
     raise NotImplementedError
   end
 

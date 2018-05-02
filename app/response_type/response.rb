@@ -40,6 +40,6 @@ class AccessTokenResponse < Response
 
   def to_json
     params = request.params
-    grant_type.access_token(params[:code], true).to_json
+    grant_type.token(params[:code], true).to_json
   end
 end

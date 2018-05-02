@@ -1,5 +1,5 @@
-require 'grant_type/authorization_code_grant_type'
-require 'response_type/response'
+require 'authorization_code_grant_type'
+require 'response'
 
 class AuthorizeController < ApplicationController
 

@@ -1,18 +1,15 @@
 require 'bcrypt'
 
-TYPE_DEFAULT = 'default'
-TYPE_JWT = 'jwt'
-
 class TokenGenerator 
 
-  def self.token(type=TYPE_DEFAULT, opts={})
+  def self.token(type=:default, opts={})
     case type
-    when TYPE_DEFAULT
+    when :default
       default_token_generator opts
-    when TYPE_JWT
+    when :jwt
       jwt_generator opts
     else
-      raise StandardError, 'Invalid token generation strategy'
+      raise StandardError, "Invalid token generation strategy #{type}"
     end
   end
 
@@ -21,7 +18,7 @@ class TokenGenerator
   def self.default_token_generator(opts)
     {
       access_token: SecureRandom.base64(opts.fetch(:length, 100)),
-      expires: Time.now + opts.fetch(:timedelta, 10.minutes)
+      expires_in: Time.now + opts.fetch(:timedelta, 10.minutes)
     }
   end
 
