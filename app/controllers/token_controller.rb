@@ -4,7 +4,7 @@ require 'response'
 
 class TokenController < ApplicationController
 
-  def show
+  def index
     case params[:grant_type]
     when 'authorization_code'
       auth_code = AuthorizationCodeGrantType.new

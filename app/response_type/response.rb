@@ -4,7 +4,7 @@ require 'uri'
 
 class Response
 
-  def to_json
+  def to_json(options)
     raise NotImplementedError
   end
 
@@ -26,7 +26,7 @@ class AuthorizeResponse < Response
     @grant_type.authorize params[:client_id], params[:redirect_url]
   end
 
-  def to_json
+  def to_json(options)
     params = @request.params
     @grant_type.authorize params[:client_id], params[:redirect_url]
   end
@@ -40,10 +40,10 @@ class AccessTokenResponse < Response
     @grant_type = grant_type
   end
 
-  def to_json
+  def to_json(options)
     params = @request.params
     token = @grant_type.token params[:code], true
     token[:token_type] = 'bearer'
-    token
+    token.to_s
   end
 end

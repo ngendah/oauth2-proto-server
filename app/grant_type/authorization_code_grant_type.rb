@@ -28,7 +28,7 @@ class AuthorizationCodeGrantType < GrantType
 
   def valid_code?(request)
     params = request.params
-    if params.key?(:authorization_code)
+    if params.key?(:code)
       @errors.concat validate_code(params, request.headers['Authorization'])
     else
       @errors.append(t_err(:auth_code_required))
@@ -124,12 +124,5 @@ class AuthorizationCodeGrantType < GrantType
       errors.append(t_err(:auth_code_invalid))
     end
     errors
-  end
-
-  def valid_uri?(url)
-    uri = URI.parse(url)
-    uri.host && uri.scheme
-  rescue URI::InvalidURIError
-  false
-  end
+  end 
 end
