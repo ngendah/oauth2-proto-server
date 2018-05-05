@@ -20,7 +20,7 @@ class AuthorizationCode < ApplicationRecord
   end
 
   def expired?
-    expires >= Time.now
+    expires <= Time.now
   end
 
   def self.find_by_client_id(client_id)

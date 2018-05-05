@@ -21,11 +21,11 @@ class GrantType
   protected
 
   def t_err(key)
-    I18n.t(key, scopes: [:errors])
+    I18n.t(key, scope: [:errors])
   end
 
   def t_title(key)
-    I18n.t(key, scopes: [:titles, :grant_types])
+    I18n.t(key, scope: [:titles, :grant_types])
   end
 
 end

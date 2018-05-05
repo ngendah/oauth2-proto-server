@@ -5,16 +5,13 @@ RSpec.describe AuthorizationCodeGrantType, type: :grant_type do
     AuthorizationCodeGrantType.send(
       :public, *AuthorizationCodeGrantType.protected_instance_methods)
   end
-
   subject(:auth_code_grant) { AuthorizationCodeGrantType.new }
   let(:client) { create :client, user: (create :user) }
-
-  context :type_name do
+  describe '.type_name' do
     subject { auth_code_grant.type_name }
     it { is_expected.to eq('authorization_code_grant_type') }
   end
-
-  context :access_token do
+  describe '.access_token' do
     let(:expired_token) do
       create :access_token, token: SecureRandom.uuid,
         expires: (Time.now - 10.minutes),
@@ -34,8 +31,7 @@ RSpec.describe AuthorizationCodeGrantType, type: :grant_type do
     it (:access_token) { is_expected.to_not be_empty }
     it (:expires_in) { is_expected.to_not be_empty }
   end
-
-  context :refresh_token do
+  describe '.refresh_token' do
     let(:expired_token) do
       create :access_token, token: SecureRandom.uuid,
         expires: (Time.now - 10.minutes),
@@ -55,9 +51,8 @@ RSpec.describe AuthorizationCodeGrantType, type: :grant_type do
     it (:access_token) { is_expected.to_not be_empty }
     it (:expires_in) { is_expected.to_not be_empty }
   end
-
-  context :authorize do 
-    describe 'with client url' do
+  describe '.authorize' do
+    context 'with client url' do
       let(:authorization) do
         create(:authorization_code, client: client,
           code: SecureRandom.uuid, expires: Time.now + 10.minutes)
@@ -67,7 +62,7 @@ RSpec.describe AuthorizationCodeGrantType, type: :grant_type do
       it { is_expected.to_not be_empty }
       it { is_expected.to eq(result)}
     end
-    describe 'with a specified url' do
+    context 'with a specified url' do
       let(:redirect_url) { 'http://test.com' }
       let(:authorization) do
         create(:authorization_code, client: client,
@@ -76,6 +71,75 @@ RSpec.describe AuthorizationCodeGrantType, type: :grant_type do
       subject { auth_code_grant.authorize(authorization.client.uid, redirect_url) }
       it { is_expected.to_not be_empty }
       it { is_expected.to eq("#{redirect_url}?code=#{authorization.code}") }
+    end
+  end
+  describe '.validate_client' do
+    context 'with valid params' do
+      let(:params) { { client_id: client.uid, redirect_url: 'http://test.com' } }
+      subject { auth_code_grant.validate_client(params) }
+      it { is_expected.to be_empty }
+    end
+    context 'with invalid params' do
+       let(:params) { { client_id: SecureRandom.uuid, redirect_url: nil } }
+       let(:errors) { [I18n.t(:auth_code_invalid_client, scope: [:errors]),
+                      I18n.t(:auth_code_redirect_url_required,
+                              scope: [:errors])
+                      ] }
+      subject { auth_code_grant.validate_client(params) }
+      it { is_expected.to_not be_empty }
+      it { is_expected.to match_array(errors) }
+    end
+  end
+  describe '.validate_code' do
+    context 'with valid params and authorization' do 
+      let(:authorization) do
+        create(:authorization_code, client: client,
+          code: SecureRandom.uuid, expires: Time.now + 10.minutes)
+      end
+      let(:params) { { code: authorization.code } }
+      let(:client_secret) { "#{client.uid}:#{client.secret}" }
+      subject { auth_code_grant.validate_code(params, client_secret) }
+      it { is_expected.to be_empty }
+    end
+    context 'with expired authorization code' do
+      let(:authorization) do
+        create(:authorization_code, client: client,
+          code: SecureRandom.uuid, expires: Time.now - 10.minutes)
+      end
+      let(:params) { { code: authorization.code } }
+      let(:client_secret) { "#{client.uid}:#{client.secret}" }
+      let(:errors) { [I18n.t(:auth_code_expired, scope: [:errors])] }
+      subject { auth_code_grant.validate_code(params, client_secret) }
+      it { is_expected.to_not be_empty }
+      it { is_expected.to match_array(errors) }
+    end
+    context 'with invalid client id or secret' do
+      let(:authorization) do
+        create(:authorization_code, client: client,
+          code: SecureRandom.uuid, expires: Time.now + 10.minutes)
+      end
+      let(:params) { { code: authorization.code } }
+      let(:client_secret) { "#{SecureRandom.uuid}:#{client.secret}" }
+      let(:errors) { [I18n.t(:auth_code_invalid_client_or_secret,
+                              scope: [:errors])] }
+      subject { auth_code_grant.validate_code(params, client_secret) }
+      it { is_expected.to_not be_empty }
+      it { is_expected.to match_array(errors) }
+    end
+    context 'with invalid authorization and code' do
+      let(:authorization) do
+        create(:authorization_code, client: client,
+          code: SecureRandom.uuid, expires: Time.now + 10.minutes)
+      end
+      let(:_) { authorization.code }
+      let(:params) { { code: SecureRandom.uuid } }
+      let(:client_secret) { "#{SecureRandom.uuid}#{client.secret}" }
+      let(:errors) { [I18n.t(:auth_code_invalid_client_or_secret,
+                              scope: [:errors]), 
+                      I18n.t(:auth_code_invalid, scope: [:errors])] }
+      subject { auth_code_grant.validate_code(params, client_secret) }
+      it { is_expected.to_not be_empty }
+      it { is_expected.to match_array(errors) }
     end
   end
 end

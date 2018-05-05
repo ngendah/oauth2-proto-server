@@ -19,7 +19,7 @@ class AuthorizationCodeGrantType < GrantType
   def valid_client?(request)
     params = request.params
     if params.key?(:client_id)
-      @errors.append validate_client(params)
+      @errors.concat validate_client(params)
     else
       @errors.append(t_err(:auth_code_client_required))
     end
@@ -28,8 +28,8 @@ class AuthorizationCodeGrantType < GrantType
 
   def valid_code?(request)
     params = request.params
-    if params.key?(:code)
-      @errors.append validate_code(params, request.headers['Authorization'])
+    if params.key?(:authorization_code)
+      @errors.concat validate_code(params, request.headers['Authorization'])
     else
       @errors.append(t_err(:auth_code_required))
     end
@@ -73,7 +73,8 @@ class AuthorizationCodeGrantType < GrantType
         token: token[:access_token], expires: token[:expires_in])
     else
       token = { access_token: token.token, expires_in: token.expires }
-    end
+    end 
+    token[:scope] = []
     token
   end
 
@@ -97,10 +98,10 @@ class AuthorizationCodeGrantType < GrantType
      # TODO: check if client can has been allowed to use this grant type
     errors = []
     client = Client.find_by_uid params[:client_id]
-    errors.append(t_err(:auth_code_invalide_client)) if client.nil?
+    errors.append(t_err(:auth_code_invalid_client)) if client.nil?
     redirect_url = params[:redirect_url]
-    # TODO: check its a valid url
-    if redirect_url.nil? || client.redirect_url.nil?
+    redirect_url = client.redirect_url if redirect_url.nil?
+    if redirect_url.nil? || !valid_uri?(redirect_url)
       errors.append(t_err(:auth_code_redirect_url_required))
     end
     errors
@@ -109,20 +110,26 @@ class AuthorizationCodeGrantType < GrantType
   def validate_code(params, authorization)
     errors = []
     errors.append(
-      t_err(:auth_code_authorization_required)
-    ) if authorization.nil? || authorization.split.empty?
+      t_err(:auth_code_invalid_client_or_secret)
+    ) if authorization.nil? || authorization.split(':').length == 1
     code = AuthorizationCode.find_by_code params[:code]
     if !code.nil?
       errors.append(t_err(:auth_code_expired)) if code.expired?
-      client_secret = authorization.split(':')
+      uid, secret = authorization.split(':')
       client = code.client
-      is_valid = (client.uid != client_secret[0] ||
-        client.secret != client_secret[1])
+      is_valid = (client.uid == uid && client.secret == secret)
       errors.append(
         t_err(:auth_code_invalid_client_or_secret)) unless is_valid
     else
       errors.append(t_err(:auth_code_invalid))
     end
     errors
+  end
+
+  def valid_uri?(url)
+    uri = URI.parse(url)
+    uri.host && uri.scheme
+  rescue URI::InvalidURIError
+  false
   end
 end

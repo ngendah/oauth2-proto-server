@@ -3,13 +3,14 @@ require 'response'
 
 class AuthorizeController < ApplicationController
 
-  def show
+  def index
     case params[:response_type]
     when 'authorization_code'
       auth_code = AuthorizationCodeGrantType.new
       raise HttpError.new(auth_code.err_title, auth_code.errors.to_s,
                           :bad_request) unless auth_code.valid_client?(request)
-      render text: AuthorizeResponse.new(request, auth_code), status: :ok
+      redirect_path =  AuthorizeResponse.new(request, auth_code).to_text
+      render json: {}, status: :temporary_redirect, location: redirect_path
     else
       raise HttpError.new(
         'GET',
