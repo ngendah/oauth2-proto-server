@@ -42,7 +42,11 @@ class AccessTokenResponse < Response
 
   def to_json(options)
     params = @request.params
-    token = @grant_type.token params[:code], true
+    if params.key?(:refresh_token)
+      token = @grant_type.renew_token params[:refresh_token], true
+    else
+      token = @grant_type.token params[:code], true
+    end
     token[:token_type] = 'bearer'
     token.to_s
   end

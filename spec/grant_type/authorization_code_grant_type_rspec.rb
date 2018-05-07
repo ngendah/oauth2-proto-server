@@ -7,15 +7,18 @@ RSpec.describe AuthorizationCodeGrantType, type: :grant_type do
   end
   subject(:auth_code_grant) { AuthorizationCodeGrantType.new }
   let(:client) { create :client, user: (create :user) }
+  let(:grant_type) { AuthorizationCodeGrantType.name.underscore }
+
   describe '.type_name' do
     subject { auth_code_grant.type_name }
     it { is_expected.to eq('authorization_code_grant_type') }
   end
+
   describe '.access_token' do
     let(:expired_token) do
       create :access_token, token: SecureRandom.uuid,
         expires: (Time.now - 10.minutes),
-        refresh: false
+        refresh: false, grant_type: grant_type
     end
     let(:authorization) do
       create(:authorization_code, client: client,
@@ -31,11 +34,12 @@ RSpec.describe AuthorizationCodeGrantType, type: :grant_type do
     it (:access_token) { is_expected.to_not be_empty }
     it (:expires_in) { is_expected.to_not be_empty }
   end
+
   describe '.refresh_token' do
     let(:expired_token) do
       create :access_token, token: SecureRandom.uuid,
         expires: (Time.now - 10.minutes),
-        refresh: true
+        refresh: true, grant_type: grant_type
     end
     let(:authorization) do
       create(:authorization_code, client: client,
@@ -51,6 +55,7 @@ RSpec.describe AuthorizationCodeGrantType, type: :grant_type do
     it (:access_token) { is_expected.to_not be_empty }
     it (:expires_in) { is_expected.to_not be_empty }
   end
+
   describe '.authorize' do
     context 'with client url' do
       let(:authorization) do
@@ -73,6 +78,7 @@ RSpec.describe AuthorizationCodeGrantType, type: :grant_type do
       it { is_expected.to eq("#{redirect_url}?code=#{authorization.code}") }
     end
   end
+
   describe '.validate_client' do
     context 'with valid params' do
       let(:params) { { client_id: client.uid, redirect_url: 'http://test.com' } }
@@ -90,6 +96,7 @@ RSpec.describe AuthorizationCodeGrantType, type: :grant_type do
       it { is_expected.to match_array(errors) }
     end
   end
+
   describe '.validate_code' do
     context 'with valid params and authorization' do 
       let(:authorization) do
@@ -101,6 +108,7 @@ RSpec.describe AuthorizationCodeGrantType, type: :grant_type do
       subject { auth_code_grant.validate_code(params, client_secret) }
       it { is_expected.to be_empty }
     end
+
     context 'with expired authorization code' do
       let(:authorization) do
         create(:authorization_code, client: client,
@@ -113,6 +121,7 @@ RSpec.describe AuthorizationCodeGrantType, type: :grant_type do
       it { is_expected.to_not be_empty }
       it { is_expected.to match_array(errors) }
     end
+
     context 'with invalid client id or secret' do
       let(:authorization) do
         create(:authorization_code, client: client,
@@ -126,6 +135,7 @@ RSpec.describe AuthorizationCodeGrantType, type: :grant_type do
       it { is_expected.to_not be_empty }
       it { is_expected.to match_array(errors) }
     end
+
     context 'with invalid authorization and code' do
       let(:authorization) do
         create(:authorization_code, client: client,
@@ -140,6 +150,22 @@ RSpec.describe AuthorizationCodeGrantType, type: :grant_type do
       subject { auth_code_grant.validate_code(params, client_secret) }
       it { is_expected.to_not be_empty }
       it { is_expected.to match_array(errors) }
+    end
+  end
+
+  describe '.renew_token' do
+    context 'with expired token refresh access token' do
+      let(:access_token) do
+        create(:access_token, expires: Time.now - 10.minutes, refresh: true,
+               grant_type: grant_type)
+      end
+      let(:authorization) do
+        create(:authorization_code, client: client,
+          access_tokens: [access_token],
+          code: SecureRandom.uuid, expires: Time.now + 10.minutes)
+      end
+      subject { auth_code_grant.renew_token access_token.token, true }
+      it{ is_expected.to_not be_empty }
     end
   end
 end

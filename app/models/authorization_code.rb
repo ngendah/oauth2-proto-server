@@ -28,4 +28,7 @@ class AuthorizationCode < ApplicationRecord
                                                             Time.now).first
   end
 
+  def self.find_by_token(token)
+    joins(:access_tokens).where(access_tokens: {token: token})
+  end
 end

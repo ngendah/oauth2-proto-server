@@ -15,4 +15,7 @@ class ApplicationController < ActionController::API
     render json: {description: message, title: title, link: link}, status: status
   end
 
+  def t_err(key)
+    I18n.t key, scope: [:errors]
+  end
 end

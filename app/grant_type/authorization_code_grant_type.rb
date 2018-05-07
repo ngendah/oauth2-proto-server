@@ -13,7 +13,7 @@ class AuthorizationCodeGrantType < GrantType
   end
 
   def type_name
-    'authorization_code_grant_type'
+    self.class.name.underscore
   end
 
   def valid_client?(request)
@@ -33,6 +33,11 @@ class AuthorizationCodeGrantType < GrantType
     else
       @errors.append(t_err(:auth_code_required))
     end
+    @errors.empty?
+  end
+
+  def valid_refresh?(refresh_token)
+    @errors.concat validate_refresh_token(refresh_token)
     @errors.empty?
   end
 
@@ -61,6 +66,11 @@ class AuthorizationCodeGrantType < GrantType
     token
   end
 
+  def renew_token(refresh_token, refresh_required)
+    code = AuthorizationCode.find_by_token refresh_token
+    token code.uid, refresh_required
+  end
+
   protected
 
   def access_token(authorization_code)
@@ -70,12 +80,13 @@ class AuthorizationCodeGrantType < GrantType
     if token.nil? || token.expired?
       token = TokenGenerator.token
       auth_code.access_tokens << AccessToken.create(
-        token: token[:access_token], expires: token[:expires_in])
+        token: token[:access_token], expires: token[:expires_in],
+        grant_type: type_name)
     else
       token = { access_token: token.token, expires_in: token.expires }
     end 
     token[:scope] = []
-    token
+    token_time_to_timedelta token
   end
 
   def refresh_token(authorization_code, expires_in = 20.minutes)
@@ -84,18 +95,17 @@ class AuthorizationCodeGrantType < GrantType
     if refresh_token.nil? || refresh_token.expired?
       refresh_token = TokenGenerator.token :default, { timedelta: expires_in }
       auth_code.access_tokens << AccessToken.create(
-        token: refresh_token[:access_token],
-        refresh: true,
-        expires: refresh_token[:expires_in])
+        token: refresh_token[:access_token], refresh: true,
+        expires: refresh_token[:expires_in],  grant_type: type_name)
     else
       refresh_token = { access_token: refresh_token.token,
                         expires_in: refresh_token.expires }
     end
-    refresh_token
+    token_time_to_timedelta refresh_token
   end
 
   def validate_client(params)
-     # TODO: check if client can has been allowed to use this grant type
+     # TODO: check if client has been allowed to use this grant type
     errors = []
     client = Client.find_by_uid params[:client_id]
     errors.append(t_err(:auth_code_invalid_client)) if client.nil?
@@ -124,5 +134,21 @@ class AuthorizationCodeGrantType < GrantType
       errors.append(t_err(:auth_code_invalid))
     end
     errors
-  end 
+  end
+
+  def validate_refresh_token(refresh_token)
+    errors = []
+    code = AuthorizationCode.find_by_token refresh_token
+    if !code.nil?
+      errors.append(t_err(:auth_code_expired)) if code.expired? 
+    else
+      errors.append(t_err(:auth_code_invalid))
+    end
+    errors
+  end
+
+  def token_time_to_timedelta(token)
+    token[:expires_in] = timedelta_from_now token[:expires_in]
+    token
+  end
 end
