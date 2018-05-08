@@ -7,8 +7,10 @@ en:
     auth_code_invalid_client_or_secret: 'a valid client id or secret is required'
     auth_code_invalid_client: 'a valid client id is required'
     refresh_invalid_token: 'a valid refresh token expected'
-    grant_type_invalid: 'a valid grant type expected'
+    grant_type_invalid: 'a valid grant type is required'
+    internal:
+      bad_auth_header: 'Unable to retrieve client from auth header'
   titles:
-    grant_types:
-        auth_code_error: 'Authorization code'
+      auth_code_error: 'Authorization code'
+      access_token_error: 'Access token'
 

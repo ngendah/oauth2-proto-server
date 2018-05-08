@@ -1,6 +1,8 @@
 require 'http_errors'
+require 'locale'
 
 class ApplicationController < ActionController::API
+  include Locale
 
   protected
 
@@ -13,9 +15,5 @@ class ApplicationController < ActionController::API
 
   def _render_err(title, message, status, link = '')
     render json: {description: message, title: title, link: link}, status: status
-  end
-
-  def t_err(key)
-    I18n.t key, scope: [:errors]
   end
 end

@@ -3,7 +3,7 @@ class CreateAuthorizationCodes < ActiveRecord::Migration[5.2]
     create_table :authorization_codes do |t|
       t.string :code, null: false, unique: true, index: true
       t.belongs_to :client
-      t.string :redirect_url
+      t.string :redirect_url, size: 255
       t.timestamp :expires, null: false
       t.integer :scopes, array: true
       t.timestamps
