@@ -5,7 +5,8 @@ module Grants
       attr_reader :authorize
 
       def initialize(access_tokens, authorize)
-        @access_token = access_tokens[self.class.name.underscore]
+        @access_token = access_tokens[
+          self.class.name.underscore.split('/').last]
         @authorize = authorize
       end
     end

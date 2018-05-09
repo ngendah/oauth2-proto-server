@@ -1,6 +1,6 @@
 class TokenController < ApplicationController
 
-  def new
+  def create
     auth_params = AuthParams.new(params, request.headers)
     access_token = Tokens::RefreshToken.new[params[:refresh_token]]
     if access_token.nil?
@@ -19,17 +19,17 @@ class TokenController < ApplicationController
 
   def index
     auth_params = AuthParams.new(params, request.headers)
-    access_token = Tokens::AccessToken.new[params[:grant_type]]
-    if access_token.nil?
+    grant = Grants::Grant.new[params[:grant_type]]
+    if grant.nil?
       raise HttpError.new(titles(:access_token_error),
                           user_err(:grant_type_invalid), :bad_request)
     end
-    errors = access_token.is_valid(auth_params)
+    errors = grant.access_token.is_valid(auth_params)
     unless errors.empty?
       raise HttpError.new(titles(:access_token_error),
                           errors.to_s, :bad_request)
     end
-    render json: access_token.token(auth_params), status: :ok
+    render json: grant.access_token.token(auth_params), status: :ok
   rescue HttpError => error
     render_err error
   end
