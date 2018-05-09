@@ -4,4 +4,4 @@ rvm:
 bundler_args: --jobs=2
 script:
   - RAILS_ENV=test bundle exec rake db:setup
-  - bundle exec rake rspec
+  - bundle exec rake spec
