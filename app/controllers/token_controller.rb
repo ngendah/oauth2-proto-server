@@ -1,6 +1,6 @@
 class TokenController < ApplicationController
 
-  def new
+  def create
     auth_params = AuthParams.new(params, request.headers)
     access_token = Tokens::RefreshToken.new[params[:refresh_token]]
     if access_token.nil?
