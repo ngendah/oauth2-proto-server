@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe TokenController, type: :controller do
-  let(:client) { create :client, user: (create :user) }
+  let(:client) { create :client }
   let(:grant_type) { 'authorization_code' }
   describe '.index' do
     context 'with valid authorization code' do

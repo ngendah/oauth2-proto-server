@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Authorities::Authorize, type: :oauth2 do
   let(:authorize) { Authorities::Authorize.new }
-  let(:client) { create :client, user: (create :user), redirect_url: 'http://tests.com' }
+  let(:client) { create :client, redirect_url: 'http://tests.com' }
   describe '.authorize' do
     context 'with client url' do
       let(:authorization) do
