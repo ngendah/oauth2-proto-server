@@ -4,6 +4,7 @@ require 'uri'
 
 class AuthParams
   attr_accessor :params
+  attr_accessor :headers
   include Locale
 
   def initialize(params, headers)

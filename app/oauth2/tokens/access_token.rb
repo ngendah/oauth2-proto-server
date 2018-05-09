@@ -5,7 +5,8 @@ module Tokens
   class AccessToken
     def initialize
       @tokens = {
-        'authorization_code' => Type::AuthorizationCode.new
+        'authorization_code' => Type::AuthorizationCode.new,
+        'user_credentials' => Type::UserCredentials.new
       }
     end
 

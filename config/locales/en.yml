@@ -6,8 +6,10 @@ en:
     auth_code_expired: 'authorization code is expired'
     auth_code_invalid_client_or_secret: 'a valid client id or secret is required'
     auth_code_invalid_client: 'a valid client id is required'
-    refresh_invalid_token: 'a valid refresh token expected'
+    refresh_invalid_token: 'a valid refresh token required'
     grant_type_invalid: 'a valid grant type is required'
+    user_credentials_invalid_client_id: 'a valid client required'
+    user_credentials_invalid_username_or_password: 'a valid username or password required'
     internal:
       bad_auth_header: 'Unable to retrieve client from auth header'
   titles:
