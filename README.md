@@ -1,24 +1,18 @@
-# README
+OAuth 2 protocol server
+=======================
+Currently implements the following grants:
+* authorization code
+* user credentials
+* work-in progress
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+### install dependencies
+Best served with [RVM](https://rvm.org) :-)
 
-Things you may want to cover:
+``
+$ bundle install
+``
 
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+### Tests
+``
+$ rspec
+``
