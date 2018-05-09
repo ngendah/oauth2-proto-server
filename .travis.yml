@@ -5,4 +5,3 @@ bundler_args: --jobs=2
 script:
   - RAILS_ENV=test bundle exec rake db:setup
   - bundle exec rake rspec
-cache: bundler
