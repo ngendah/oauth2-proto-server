@@ -1,4 +1,5 @@
 class AccessToken < ApplicationRecord
+  validates_presence_of :grant_type
 
   def expired?
     expires >= Time.now
