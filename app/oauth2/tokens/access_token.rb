@@ -1,7 +1,4 @@
-
-
 module Tokens
-
   class AccessToken
     def initialize
       @tokens = {
@@ -12,13 +9,6 @@ module Tokens
 
     def [](key)
       @tokens[key]
-    end
-  end
-
-  class RefreshToken
-    def [](refresh_token)
-      access_token = ::AccessToken.find_by_token refresh_token
-      AccessToken.new[access_token.grant_type]
     end
   end
 end

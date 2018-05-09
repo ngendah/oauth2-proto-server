@@ -6,15 +6,20 @@ module Tokens
         errors = []
         client = ::Client.find_by_uid auth_params.client_id
         if !client.nil?
-          user = client.user
-          username, password = auth_params.username_and_password
-          if user.uid != username || !user.authenticate(password)
+          user_id, password = auth_params.username_password
+          user = client.find_user_by_uid user_id
+          if user.nil? || !user.authenticate(password)
             errors.append(
               user_err(:user_credentials_invalid_username_or_password))
           end
         elsif auth_params.refresh_token_key_exists?
           refresh_token = auth_params.refresh_token
-          unless ::AccessToken.valid?(refresh_token, true)
+          if ::AccessToken.valid?(refresh_token, true)
+            token = ::AccessToken.find_by_token refresh_token
+            if token.expired?
+              errors.append(user_err(:refresh_token_expired))
+            end
+          else
             errors.append(user_err(:refresh_invalid_token))
           end
         else
@@ -24,10 +29,10 @@ module Tokens
       end
 
       def token(auth_params, options = {})
-        username, = auth_params.username_and_password
-        token = access_token username
+        user_id, = auth_params.username_password
+        token = access_token user_id
         if options.fetch(:refresh_required, true)
-          ref_token = refresh_token username
+          ref_token = refresh_token user_id
           token[:refresh_token] = ref_token[:access_token]
         end
         token
@@ -39,7 +44,8 @@ module Tokens
 
       def refresh(auth_params, options = {})
         user = ::User.find_by_token auth_params.refresh_token
-        auth_params.headers['Authorization'] = "#{user.uid}:"
+        auth_params.params[:username] = user.uid
+        auth_params.params[:password] = ''
         token auth_params, options
       end
 

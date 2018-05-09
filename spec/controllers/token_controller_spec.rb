@@ -1,10 +1,10 @@
 require 'rails_helper'
 
 RSpec.describe TokenController, type: :controller do
-  let(:client) { create :client }
-  let(:grant_type) { 'authorization_code' }
   describe '.index' do
     context 'with valid authorization code' do
+      let(:client) { create :client }
+      let(:grant_type) { 'authorization_code' }
       let(:authorization) do
         create(:authorization_code, client: client,
                redirect_url: client.redirect_url,
@@ -21,9 +21,27 @@ RSpec.describe TokenController, type: :controller do
         expect(response).to have_http_status(:ok)
       }
     end
+    context 'with valid user credentials' do
+      let(:password) { 'password' }
+      let(:grant_type) { 'user_credentials' }
+      let(:user) do
+        create :user, uid: SecureRandom.uuid, password: password
+      end
+      let(:client) { create :client, users: [user] }
+      let(:params) do
+        { username: user.uid, password: password, client_id: client.uid,
+          grant_type: grant_type }
+      end
+      it {
+        get :index, params: params
+        expect(response).to have_http_status(:ok)
+      }
+    end
   end
   describe '.show' do
-    context 'with valid reset token' do
+    context 'authorization code grant with valid reset token' do
+      let(:client) { create :client }
+      let(:grant_type) { 'authorization_code' }
       let(:refresh_token) do
         create :access_token, token: SecureRandom.uuid,
                expires: (Time.now + 10.minutes),
@@ -37,6 +55,26 @@ RSpec.describe TokenController, type: :controller do
       end
       let(:params) do
         { refresh_token: authorization.access_tokens.first.token }
+      end
+      it {
+        post :create, params: params
+        expect(response).to have_http_status(:ok)
+      }
+    end
+    context 'user credentials with valid reset token' do
+      let(:grant_type) { 'user_credentials' }
+      let(:refresh_token) do
+        create :access_token, token: SecureRandom.uuid,
+               expires: (Time.now + 10.minutes),
+               refresh: true, grant_type: grant_type
+      end
+      let(:user) do
+        create :user, password: 'password', access_tokens: [refresh_token]
+      end
+      let(:client) { create :client, users: [user] }
+      let(:params) do
+        { refresh_token: client.users.first.access_tokens.first.token,
+          grant_type: grant_type }
       end
       it {
         post :create, params: params
