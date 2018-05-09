@@ -6,8 +6,12 @@ class CreateClients < ActiveRecord::Migration[5.2]
       t.string :redirect_url, size: 255
       t.string :grant_types, array: true
       t.integer :scope, array: true
-      t.belongs_to :user
       t.timestamps
+    end
+
+    create_table :clients_users do |t|
+      t.belongs_to :client, index: true
+      t.belongs_to :user, index: true
     end
   end
 end
