@@ -11,7 +11,7 @@ RSpec.describe Tokens::Type::AuthorizationCode, type: :oauth2 do
   end
   subject(:auth_code_token) { Tokens::Type::AuthorizationCode.new }
   let(:redirect_url) { 'http://test.com' }
-  let(:client) { create :client, user: (create :user) }
+  let(:client) { create :client }
   let(:grant_type) { 'authorization_code' }
 
   describe '.type_name' do

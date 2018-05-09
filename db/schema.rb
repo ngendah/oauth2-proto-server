@@ -31,6 +31,13 @@ ActiveRecord::Schema.define(version: 2018_04_26_082453) do
     t.index ["authorization_code_id"], name: "idx_token_code_auth_cod_id"
   end
 
+  create_table "access_tokens_users", id: false, force: :cascade do |t|
+    t.integer "access_token_id"
+    t.integer "user_id"
+    t.index ["access_token_id"], name: "index_access_tokens_users_on_access_token_id"
+    t.index ["user_id"], name: "index_access_tokens_users_on_user_id"
+  end
+
   create_table "authorization_codes", force: :cascade do |t|
     t.string "code", null: false
     t.integer "client_id"
@@ -49,11 +56,16 @@ ActiveRecord::Schema.define(version: 2018_04_26_082453) do
     t.string "redirect_url"
     t.string "grant_types"
     t.integer "scope"
-    t.integer "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["uid"], name: "index_clients_on_uid"
-    t.index ["user_id"], name: "index_clients_on_user_id"
+  end
+
+  create_table "clients_users", force: :cascade do |t|
+    t.integer "client_id"
+    t.integer "user_id"
+    t.index ["client_id"], name: "index_clients_users_on_client_id"
+    t.index ["user_id"], name: "index_clients_users_on_user_id"
   end
 
   create_table "jwts", force: :cascade do |t|

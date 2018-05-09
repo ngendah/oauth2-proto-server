@@ -5,7 +5,7 @@ require 'uri'
 RSpec.describe AuthorizeController, type: :controller do
 
   describe '.index' do
-    let(:client) { create :client, user: (create :user) }
+    let(:client) { create :client }
     context 'with valid authorization code' do
       let(:redirect_url) { 'http://test.com' }
       let(:authorization) do

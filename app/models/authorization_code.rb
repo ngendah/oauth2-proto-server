@@ -1,6 +1,6 @@
 class AuthorizationCode < ApplicationRecord
-  belongs_to :client
   has_and_belongs_to_many :access_tokens
+  belongs_to :client
   #TODO: validate user input
   validates_length_of :redirect_url, in: 2..255
 
@@ -21,6 +21,10 @@ class AuthorizationCode < ApplicationRecord
     ).update_all(deleted: true)
   end
 
+  def self.find_by_token(token)
+    joins(:access_tokens).where(access_tokens: { token: token }).first
+  end
+
   def expired?
     expires <= Time.now
   end
@@ -29,9 +33,5 @@ class AuthorizationCode < ApplicationRecord
     # TODO: order by time created
     joins(:client).where(clients: { uid: client_id }).where('expires > ?',
                                                             Time.now).first
-  end
-
-  def self.find_by_token(token)
-    joins(:access_tokens).where(access_tokens: { token: token }).first
   end
 end

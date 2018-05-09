@@ -2,7 +2,7 @@ class AccessToken < ApplicationRecord
   validates_presence_of :grant_type
 
   def expired?
-    expires >= Time.now
+    expires < Time.now
   end
 
   def self.valid?(token, is_refresh = false)
