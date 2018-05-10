@@ -8,13 +8,12 @@ Currently implements the following grants:
 * work-in progress
 
 ### install dependencies
-Best served with [RVM](https://rvm.org) :-)
-
 ``
 $ bundle install
 ``
 
 ### Tests
-``
+```
+$ RAILS_ENV=test rails db:setup
 $ rspec
-``
+```
