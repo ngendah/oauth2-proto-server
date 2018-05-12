@@ -53,8 +53,7 @@ module Tokens
         refresh_token = auth_params.refresh_token
         auth_code = ::AuthorizationCode.find_by_token refresh_token
         access_token = ::AccessToken.find_by_token refresh_token
-        # TODO: refactor add method, set_authorization_code, to auth_params
-        auth_params.params[:authorization_code] = auth_code.code
+        auth_params.authorization_code = auth_code.code
         options[:correlation_uid] = access_token.correlation_uid
         token auth_params, options
       end

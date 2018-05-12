@@ -3,8 +3,8 @@ require 'uri'
 
 
 class AuthParams
-  attr_accessor :params
-  attr_accessor :headers
+#  attr_accessor :params
+#  attr_accessor :headers
   include Locale
 
   def initialize(params, headers)
@@ -14,6 +14,10 @@ class AuthParams
 
   def authorization_code
     @params[:authorization_code]
+  end
+
+  def authorization_code=(auth_code)
+    @params[:authorization_code] = auth_code
   end
 
   def client_id
@@ -39,6 +43,14 @@ class AuthParams
 
   def username_password
     [@params[:username], @params[:password]]
+  end
+
+  def username=(username)
+    @params[:username] = username
+  end
+
+  def password=(password)
+    @params[:password] = password
   end
 
   def refresh_token

@@ -33,8 +33,8 @@ module Tokens
         token = access_token user_id, options
         if options.fetch(:refresh_required, true)
           unless options.key?(:correlation_uid)
-             access_token = ::AccessToken.find_by_token token[:access_token]
-             options[:correlation_uid] = access_token.correlation_uid
+            access_token = ::AccessToken.find_by_token token[:access_token]
+            options[:correlation_uid] = access_token.correlation_uid
           end
           ref_token = refresh_token user_id, options
           token[:refresh_token] = ref_token[:access_token]
@@ -50,9 +50,8 @@ module Tokens
         refresh_token = auth_params.refresh_token
         user = ::User.find_by_token refresh_token
         access_token = ::AccessToken.find_by_token refresh_token
-        # TODO: refactor add method set username_password to auth_params
-        auth_params.params[:username] = user.uid
-        auth_params.params[:password] = ''
+        auth_params.username = user.uid
+        auth_params.password = ''
         options[:correlation_uid] = access_token.correlation_uid
         token auth_params, options
       end
