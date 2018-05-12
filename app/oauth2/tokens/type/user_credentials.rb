@@ -30,9 +30,9 @@ module Tokens
 
       def token(auth_params, options = {})
         user_id, = auth_params.username_password
-        token = access_token user_id
+        token = access_token user_id, options
         if options.fetch(:refresh_required, true)
-          ref_token = refresh_token user_id
+          ref_token = refresh_token user_id, options
           token[:refresh_token] = ref_token[:access_token]
         end
         token
@@ -51,7 +51,7 @@ module Tokens
 
       protected
 
-      def access_token(user_uid)
+      def access_token(user_uid, options = {})
         user = ::User.find_by_uid user_uid
         user.delete_expired_tokens
         token = user.token
@@ -67,10 +67,11 @@ module Tokens
         token_time_to_timedelta token
       end
 
-      def refresh_token(user_id, expires_in = 20.minutes)
+      def refresh_token(user_id, options = {})
         user = ::User.find_by_uid user_id
         refresh_token = user.refresh_token
         if refresh_token.nil? || refresh_token.expired?
+          expires_in = options.fetch(:expires_in, 20.minutes)
           refresh_token = TokenGenerator.token :default, timedelta: expires_in
           user.access_tokens << ::AccessToken.create(
             token: refresh_token[:access_token], refresh: true,
