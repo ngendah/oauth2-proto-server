@@ -17,7 +17,7 @@ class TokenController < ApplicationController
     render_err error
   end
 
-  def revoke
+  def destroy
     auth_params = AuthParams.new(params, request.headers)
     grant = Grants::Grant.from_token params[:token]
     if grant.nil?
