@@ -3,8 +3,6 @@ require 'uri'
 
 
 class AuthParams
-#  attr_accessor :params
-#  attr_accessor :headers
   include Locale
 
   def initialize(params, headers)
@@ -65,5 +63,17 @@ class AuthParams
 
   def refresh_token_key_exists?
     @params.key?(:refresh_token)
+  end
+
+  def access_token
+    bearer = @headers['Authorization']
+    if bearer.nil? || basic_auth.split(' ').length == 1
+      raise StandardError(internal_err(:bad_auth_header))
+    end
+    type, token = basic_auth.split(' ')
+    unless type == 'Bearer'
+      raise StandardError(internal_err(:bad_auth_method_expect_bearer))
+    end
+    token
   end
 end

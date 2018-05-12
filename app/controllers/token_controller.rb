@@ -17,6 +17,20 @@ class TokenController < ApplicationController
     render_err error
   end
 
+  def revoke
+    auth_params = AuthParams.new(params, request.headers)
+    access_token = Tokens::RevokeToken.new[params[:token]]
+    if access_token.nil?
+      raise HttpError.new(titles(:access_token_error),
+                          user_err(:access_token_invalid_token),
+                          :bad_request)
+    end
+    # TODO: add validation
+    render json: access_token.revoke(auth_params), status: :ok
+  rescue HttpError => error
+    render_err error
+  end
+
   def index
     auth_params = AuthParams.new(params, request.headers)
     grant = Grants::Grant.new[params[:grant_type]]

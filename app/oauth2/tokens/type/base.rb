@@ -19,6 +19,10 @@ module Tokens
         raise NotImplementedError
       end
 
+      def revoke(auth_params, options = {})
+        ::AccessToken.revoke auth_params.access_token
+      end
+
       def type_name
         raise NotImplementedError
       end
