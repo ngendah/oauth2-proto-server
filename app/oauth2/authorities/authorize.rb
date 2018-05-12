@@ -1,18 +1,20 @@
 require 'token_generator'
+require 'locale'
 
 
 module Authorities
 
   class Authorize
+    include Locale
 
     def is_valid(auth_params)
       errors = []
       client = ::Client.find_by_uid auth_params.client_id
-      errors.append(t_err(:auth_code_invalid_client)) if client.nil?
+      errors.append(user_err(:auth_code_invalid_client)) if client.nil?
       redirect_url = auth_params.redirect_url
-      redirect_url = client.redirect_url if redirect_url.nil?
+      redirect_url = client.redirect_url if redirect_url.nil? && !client.nil?
       if redirect_url.nil? || !valid_url?(redirect_url)
-        errors.append(t_err(:auth_code_redirect_url_required))
+        errors.append(user_err(:auth_code_redirect_url_required))
       end
       errors
     end
