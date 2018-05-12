@@ -15,5 +15,10 @@ module Grants
     def [](key)
       @grants[key]
     end
+
+    def self.from_refresh_token(token)
+      access_token = ::AccessToken.find_by_token token
+      new[access_token.grant_type]
+    end
   end
 end
