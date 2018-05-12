@@ -2,7 +2,7 @@ class TokenController < ApplicationController
 
   def create
     auth_params = AuthParams.new(params, request.headers)
-    grant = Grants::Grant.from_refresh_token params[:refresh_token]
+    grant = Grants::Grant.from_token params[:refresh_token]
     if grant.nil?
       raise HttpError.new(titles(:access_token_error),
                           user_err(:refresh_invalid_token), :bad_request)
