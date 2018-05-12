@@ -35,6 +35,10 @@ module Tokens
         authorization_code = auth_params.authorization_code
         token = access_token authorization_code, options
         if options.fetch(:refresh_required, true)
+          unless options.key?(:correlation_uid)
+             access_token = ::AccessToken.find_by_token token[:access_token]
+             options[:correlation_uid] = access_token.correlation_uid
+          end
           ref_token = refresh_token authorization_code, options
           token[:refresh_token] = ref_token[:access_token]
         end
@@ -46,8 +50,12 @@ module Tokens
       end
 
       def refresh(auth_params, options = {})
-        auth_code = ::AuthorizationCode.find_by_token auth_params.refresh_token
+        refresh_token = auth_params.refresh_token
+        auth_code = ::AuthorizationCode.find_by_token refresh_token
+        access_token = ::AccessToken.find_by_token refresh_token
+        # TODO: refactor add method, set_authorization_code, to auth_params
         auth_params.params[:authorization_code] = auth_code.code
+        options[:correlation_uid] = access_token.correlation_uid
         token auth_params, options
       end
 
@@ -59,9 +67,10 @@ module Tokens
         token = auth_code.token
         if token.nil? || token.expired?
           token = TokenGenerator.token
+          correlation_uid = options.fetch :correlation_uid, SecureRandom.uuid
           auth_code.access_tokens << ::AccessToken.create(
             token: token[:access_token], expires: token[:expires_in],
-            grant_type: type_name)
+            correlation_uid: correlation_uid, grant_type: type_name)
         else
           token = {access_token: token.token, expires_in: token.expires}
         end
@@ -73,11 +82,14 @@ module Tokens
         auth_code = ::AuthorizationCode.find_by_code authorization_code
         refresh_token = auth_code.refresh_token
         if refresh_token.nil? || refresh_token.expired?
-          expires_in = options.fetch(:expires_in, 20.minutes)
+          expires_in = options.fetch :expires_in, 20.minutes
+          correlation_uid = options.fetch :correlation_uid, nil
           refresh_token = TokenGenerator.token :default, {timedelta: expires_in}
           auth_code.access_tokens << ::AccessToken.create(
             token: refresh_token[:access_token], refresh: true,
-            expires: refresh_token[:expires_in], grant_type: type_name)
+            expires: refresh_token[:expires_in], grant_type: type_name,
+            correlation_uid: correlation_uid
+          )
         else
           refresh_token = {access_token: refresh_token.token,
                            expires_in: refresh_token.expires}
