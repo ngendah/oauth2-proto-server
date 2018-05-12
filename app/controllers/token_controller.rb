@@ -19,14 +19,14 @@ class TokenController < ApplicationController
 
   def revoke
     auth_params = AuthParams.new(params, request.headers)
-    access_token = Tokens::RevokeToken.new[params[:token]]
-    if access_token.nil?
+    grant = Grants::Grant.from_token params[:token]
+    if grant.nil?
       raise HttpError.new(titles(:access_token_error),
                           user_err(:access_token_invalid_token),
                           :bad_request)
     end
     # TODO: add validation
-    render json: access_token.revoke(auth_params), status: :ok
+    render json: grant.access_token.revoke(auth_params), status: :ok
   rescue HttpError => error
     render_err error
   end
