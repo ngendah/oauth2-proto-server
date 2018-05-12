@@ -130,6 +130,16 @@ RSpec.describe Tokens::Type::AuthorizationCode, type: :oauth2 do
       it (:access_token) { is_expected.to_not be_empty }
       it (:expires_in) { is_expected.to_not be_empty }
     end
+    context 'with a correlated refresh token' do
+      let(:token) { auth_code_token.token(auth_params) }
+      let(:correlation_uid) do
+        ::AccessToken.find_by_token(token[:access_token]).correlation_uid
+      end
+      subject do
+        ::AccessToken.find_by_token(token[:refresh_token]).correlation_uid
+      end
+      it { is_expected.to eq(correlation_uid) }
+    end
     context 'without a refresh token' do
       subject { auth_code_token.token(auth_params, refresh_required: false) }
       it { is_expected.to_not be_empty }
@@ -144,8 +154,9 @@ RSpec.describe Tokens::Type::AuthorizationCode, type: :oauth2 do
   describe '.refresh' do
     let(:refresh_token) do
       create :access_token, token: SecureRandom.uuid,
-             expires: (Time.now - 10.minutes),
-             refresh: true, grant_type: grant_type
+             expires: (Time.now + 10.minutes),
+             refresh: true, grant_type: grant_type,
+             correlation_uid: SecureRandom.uuid
     end
     let(:authorization) do
         create(:authorization_code, client: client,
@@ -153,15 +164,29 @@ RSpec.describe Tokens::Type::AuthorizationCode, type: :oauth2 do
                access_tokens: [refresh_token],
                code: SecureRandom.uuid, expires: Time.now + 10.minutes)
     end
-    let(:params) { { refresh_token: authorization.access_tokens.first.token } }
-    let(:auth_params) { AuthParams.new(params, {}) }
-    subject { auth_code_token.refresh(auth_params) }
-    it { is_expected.to_not be_empty }
-    it { is_expected.to have_key(:access_token) }
-    it { is_expected.to have_key(:expires_in) }
-    it { is_expected.to have_key(:refresh_token) }
-    it (:expires_in) { is_expected.to_not eq(Time.now) }
-    it (:access_token) { is_expected.to_not be_empty }
-    it (:expires_in) { is_expected.to_not be_empty }
+    describe 'generate a valid access token' do
+      let(:params) { { refresh_token: authorization.access_tokens.first.token } }
+      let(:auth_params) { AuthParams.new(params, {}) }
+      subject { auth_code_token.refresh(auth_params) }
+      it { is_expected.to_not be_empty }
+      it { is_expected.to have_key(:access_token) }
+      it { is_expected.to have_key(:expires_in) }
+      it { is_expected.to have_key(:refresh_token) }
+      it (:expires_in) { is_expected.to_not eq(Time.now) }
+      it (:access_token) { is_expected.to_not be_empty }
+      it (:expires_in) { is_expected.to_not be_empty }
+    end
+    describe 'generates a correlated access token' do
+      let(:params) do
+        { refresh_token: authorization.access_tokens.first.token }
+      end
+      let(:auth_params) { AuthParams.new(params, {}) }
+      let(:token) { auth_code_token.refresh(auth_params) }
+      subject do 
+        ::AccessToken.find_by_token(token[:access_token]).correlation_uid
+      end
+      it { is_expected.to_not be_nil }
+      it { is_expected.to eq(refresh_token.correlation_uid) }
+    end
   end
 end

@@ -131,21 +131,34 @@ RSpec.describe Tokens::Type::UserCredentials, type: :oauth2 do
     let(:refresh_token) do
       create :access_token, token: SecureRandom.uuid,
              expires: (Time.now + 10.minutes),
-             refresh: true, grant_type: grant_type
+             refresh: true, grant_type: grant_type,
+             correlation_uid: SecureRandom.uuid
     end
     let(:user) do
       create :user, uid: SecureRandom.uuid, password: 'password',
              access_tokens: [refresh_token]
     end
-    let(:params) { { refresh_token: user.access_tokens.first.token } }
-    let(:auth_params) { AuthParams.new(params, {}) }
-    subject { usr_credentials.refresh(auth_params) }
-    it { is_expected.to_not be_empty }
-    it { is_expected.to have_key(:access_token) }
-    it { is_expected.to have_key(:expires_in) }
-    it { is_expected.to have_key(:refresh_token) }
-    it (:expires_in) { is_expected.to_not eq(Time.now) }
-    it (:access_token) { is_expected.to_not be_empty }
-    it (:expires_in) { is_expected.to_not be_empty }
+    describe 'generates a valid access token' do
+      let(:params) { { refresh_token: user.access_tokens.first.token } }
+      let(:auth_params) { AuthParams.new(params, {}) }
+      subject { usr_credentials.refresh(auth_params) }
+      it { is_expected.to_not be_empty }
+      it { is_expected.to have_key(:access_token) }
+      it { is_expected.to have_key(:expires_in) }
+      it { is_expected.to have_key(:refresh_token) }
+      it (:expires_in) { is_expected.to_not eq(Time.now) }
+      it (:access_token) { is_expected.to_not be_empty }
+      it (:expires_in) { is_expected.to_not be_empty }
+    end
+    describe 'generates a correlated access token' do
+      let(:params) { { refresh_token: user.access_tokens.first.token } }
+      let(:auth_params) { AuthParams.new(params, {}) }
+      let(:token) { usr_credentials.refresh(auth_params) }
+      subject do 
+        ::AccessToken.find_by_token(token[:access_token]).correlation_uid
+      end
+      it { is_expected.to_not be_nil }
+      it { is_expected.to eq(refresh_token.correlation_uid) }
+    end
   end
 end

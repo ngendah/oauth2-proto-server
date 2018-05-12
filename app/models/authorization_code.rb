@@ -4,11 +4,13 @@ class AuthorizationCode < ApplicationRecord
   #TODO: validate user input
   validates_length_of :redirect_url, in: 2..255
 
+  # TODO: rename to active_token
   def token
     access_tokens.where(deleted: false, refresh: false).where(
       'access_tokens.expires > ?', Time.now).first
   end
 
+  # TODO: rename to active_refresh_token
   def refresh_token
     access_tokens.where(deleted: false, refresh: true).where(
       'access_tokens.expires > ?', Time.now
