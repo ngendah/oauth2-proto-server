@@ -51,12 +51,12 @@ RSpec.describe Tokens::Type::UserCredentials, type: :oauth2 do
     it (:expires_in) { is_expected.to_not be_empty }
   end
 
-  describe '.is_valid' do
+  describe '.token_validate' do
     context 'with invalid client id' do
       let(:params) { { client_id: 'id' } }
       let(:auth_params) { AuthParams.new(params, {}) }
       let(:errors) { [user_err(:user_credentials_invalid_client_id)] }
-      subject { usr_credentials.is_valid(auth_params) }
+      subject { usr_credentials.token_validate(auth_params) }
       it { is_expected.to match_array(errors) }
     end
     context 'with valid client id and invalid username' do
@@ -69,7 +69,7 @@ RSpec.describe Tokens::Type::UserCredentials, type: :oauth2 do
       let(:errors) do
         [user_err(:user_credentials_invalid_username_or_password)]
       end
-      subject { usr_credentials.is_valid(auth_params) }
+      subject { usr_credentials.token_validate(auth_params) }
       it { is_expected.to match_array(errors) }
     end
     context 'with valid client id, username and invalid password' do
@@ -84,9 +84,12 @@ RSpec.describe Tokens::Type::UserCredentials, type: :oauth2 do
       let(:errors) do
         [user_err(:user_credentials_invalid_username_or_password)]
       end
-      subject { usr_credentials.is_valid(auth_params) }
+      subject { usr_credentials.token_validate(auth_params) }
       it { is_expected.to match_array(errors) }
     end
+  end
+
+  describe '.refresh_validate' do
     context 'with invalid refresh token' do
       let(:params) do
         { refresh_token: '' }
@@ -95,8 +98,32 @@ RSpec.describe Tokens::Type::UserCredentials, type: :oauth2 do
       let(:errors) do
         [user_err(:refresh_invalid_token)]
       end
+      subject { usr_credentials.refresh_validate(auth_params) }
+      it { is_expected.to match_array(errors) }
+    end
+  end
+
+  describe '.is_valid' do
+    context 'with the action :index it validate a token request' do
+      let(:params) { { client_id: 'id', action: :index.to_s } }
+      let(:auth_params) { AuthParams.new(params, {}) }
+      let(:errors) { [user_err(:user_credentials_invalid_client_id)] }
       subject { usr_credentials.is_valid(auth_params) }
       it { is_expected.to match_array(errors) }
+    end
+    context 'with the action :create it validates a refresh request' do
+      let(:params) do
+        { refresh_token: '', action: :create.to_s }
+      end
+      let(:auth_params) { AuthParams.new(params, {}) }
+      let(:errors) do
+        [user_err(:refresh_invalid_token)]
+      end
+      subject { usr_credentials.refresh_validate(auth_params) }
+      it { is_expected.to match_array(errors) }
+    end
+    context 'with the action :destroy it validates a revoke request' do
+      pending
     end
   end
 

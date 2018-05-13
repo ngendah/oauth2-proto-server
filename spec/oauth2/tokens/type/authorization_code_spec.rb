@@ -114,22 +114,22 @@ RSpec.describe Tokens::Type::AuthorizationCode, type: :oauth2 do
   end
 
   describe '.is_valid' do
-    context 'with the action :index it validates' do
-      let(:params) { { authorization_code: 'code', action: :index } }
+    context 'with the action :index it validates an access token request' do
+      let(:params) { { authorization_code: 'code', action: :index.to_s } }
       let(:auth_params) { AuthParams.new(params, {}) }
       let(:errors) { [user_err(:auth_code_invalid)] }
       subject { auth_code_token.token_validate(auth_params) }
       it { is_expected.to match_array(errors) }
     end
-    context 'with the action :create it validates' do
+    context 'with the action :create it validates a refresh request' do
       let(:auth_params) do
-        AuthParams.new({ refresh_token: 'token', action: :create }, {})
+        AuthParams.new({ refresh_token: 'token', action: :create.to_s }, {})
       end
       let(:errors) { [user_err(:refresh_invalid_token)] }
       subject { auth_code_token.refresh_validate(auth_params) }
       it { is_expected.to match_array(errors) }
     end
-    context 'with the action :destroy it validates' do
+    context 'with the action :destroy it validates a revoke request' do
       pending
     end
     context 'with an invalid action it raises an exception' do
