@@ -2,32 +2,6 @@ module Tokens
   module Type
     class UserCredentials < Base
 
-      def is_valid(auth_params)
-        errors = []
-        client = ::Client.find_by_uid auth_params.client_id
-        if !client.nil?
-          user_id, password = auth_params.username_password
-          user = client.find_user_by_uid user_id
-          if user.nil? || !user.authenticate(password)
-            errors.append(
-              user_err(:user_credentials_invalid_username_or_password))
-          end
-        elsif auth_params.refresh_token_key_exists?
-          refresh_token = auth_params.refresh_token
-          if ::AccessToken.valid?(refresh_token, true)
-            token = ::AccessToken.find_by_token refresh_token
-            if token.expired?
-              errors.append(user_err(:refresh_token_expired))
-            end
-          else
-            errors.append(user_err(:refresh_invalid_token))
-          end
-        else
-          errors.append(user_err(:user_credentials_invalid_client_id))
-        end
-        errors
-      end
-
       def token(auth_params, options = {})
         user_id, = auth_params.username_password
         token = access_token user_id, options
@@ -92,6 +66,40 @@ module Tokens
                             expires_in: refresh_token.expires }
         end
         token_time_to_timedelta refresh_token
+      end
+
+      def token_validate(auth_params)
+        errors = []
+        client = ::Client.find_by_uid auth_params.client_id
+        if client.nil?
+          errors.append(user_err(:user_credentials_invalid_client_id))
+        else
+          user_id, password = auth_params.username_password
+          user = client.find_user_by_uid user_id
+          if user.nil? || !user.authenticate(password)
+            errors.append(
+              user_err(:user_credentials_invalid_username_or_password))
+          end
+        end
+        errors
+      end
+
+      def refresh_validate(auth_params)
+        errors = []
+        refresh_token = auth_params.refresh_token
+        if ::AccessToken.valid?(refresh_token, true)
+          token = ::AccessToken.find_by_token refresh_token
+          if token.expired?
+            errors.append(user_err(:refresh_token_expired))
+          end
+        else
+          errors.append(user_err(:refresh_invalid_token))
+        end
+        errors
+      end
+
+      def revoke_validate(auth_params)
+        []
       end
     end
   end

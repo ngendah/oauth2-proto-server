@@ -12,7 +12,17 @@ module Tokens
       end
 
       def is_valid(auth_params)
-        raise NotImplementedError
+        case auth_params.action
+        when :index.to_s
+          errors = token_validate auth_params
+        when :create.to_s
+          errors = refresh_validate auth_params
+        when :destroy.to_s
+          errors = revoke_validate auth_params
+        else
+          raise StandardError 'Invalid action'
+        end
+        errors
       end
 
       def refresh(auth_params, options = {})
@@ -32,6 +42,18 @@ module Tokens
       def token_time_to_timedelta(token)
         token[:expires_in] = timedelta_from_now token[:expires_in]
         token
+      end
+
+      def token_validate(auth_params)
+        raise NotImplementedError
+      end
+
+      def refresh_validate(auth_params)
+        raise NotImplementedError
+      end
+
+      def revoke_validate(auth_params)
+        raise NotImplementedError
       end
 
       def timedelta_from_now(to)

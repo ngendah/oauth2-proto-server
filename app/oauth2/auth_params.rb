@@ -18,6 +18,21 @@ class AuthParams
     @params[:authorization_code] = auth_code
   end
 
+  def action
+    @params[:action]
+  end
+
+  def endpoint
+    {
+      token: 'access_tokens',
+      authorize: 'authorize'
+    }[@params[:controller]]
+  end
+
+  def grant_type
+    @params[:grant_type]
+  end
+
   def client_id
     basic_auth = @headers['Authorization']
     unless basic_auth.nil?

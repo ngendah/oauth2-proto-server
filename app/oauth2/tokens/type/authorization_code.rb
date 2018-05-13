@@ -4,33 +4,6 @@ module Tokens
 
     class AuthorizationCode < Base
 
-      def is_valid(auth_params)
-        errors = []
-        begin
-          code = ::AuthorizationCode.find_by_code auth_params.authorization_code
-          if !code.nil?
-            errors.append(user_err(:auth_code_expired)) if code.expired?
-            client_id = auth_params.client_id
-            secret = auth_params.secret
-            client = code.client
-            is_valid = (client.uid == client_id && client.secret == secret)
-            unless is_valid
-              errors.append(user_err(:auth_code_invalid_client_or_secret))
-            end
-          elsif auth_params.refresh_token_key_exists?
-            refresh_token = auth_params.refresh_token
-            unless ::AccessToken.valid?(refresh_token, true)
-              errors.append(user_err(:refresh_invalid_token))
-            end
-          else
-            errors.append(user_err(:auth_code_invalid))
-          end
-        rescue StandardError => error
-          errors.append(user_err(:auth_code_invalid_client_or_secret))
-        end
-        errors
-      end
-
       def token(auth_params, options = {})
         authorization_code = auth_params.authorization_code
         token = access_token authorization_code, options
@@ -94,6 +67,41 @@ module Tokens
                            expires_in: refresh_token.expires}
         end
         token_time_to_timedelta refresh_token
+      end
+
+      def refresh_validate(auth_params)
+        errors = []
+        refresh_token = auth_params.refresh_token
+        unless ::AccessToken.valid?(refresh_token, true)
+          errors.append(user_err(:refresh_invalid_token))
+        end
+        errors
+      end
+
+      def token_validate(auth_params)
+        errors = []
+        code = ::AuthorizationCode.find_by_code auth_params.authorization_code
+        if code.nil?
+          errors.append(user_err(:auth_code_invalid))
+        else
+          begin
+            errors.append(user_err(:auth_code_expired)) if code.expired?
+            client_id = auth_params.client_id
+            secret = auth_params.secret
+            client = code.client
+            is_valid = (client.uid == client_id && client.secret == secret)
+            unless is_valid
+              errors.append(user_err(:auth_code_invalid_client_or_secret))
+            end
+          rescue StandardError => error
+            errors.append(user_err(:auth_code_invalid_client_or_secret))
+          end
+        end
+        errors
+      end
+
+      def revoke_validate(auth_params)
+        []
       end
     end
   end
