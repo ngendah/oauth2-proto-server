@@ -4,20 +4,6 @@ module Tokens
 
     class AuthorizationCode < Base
 
-      def is_valid(auth_params)
-        case auth_params.action
-        when :index
-          errors = token_validate auth_params
-        when :create
-          errors = refresh_validate auth_params
-        when :destroy
-          errors = revoke_validate auth_params
-        else
-          raise StandardError 'Invalid action'
-        end
-        errors
-      end
-
       def token(auth_params, options = {})
         authorization_code = auth_params.authorization_code
         token = access_token authorization_code, options
