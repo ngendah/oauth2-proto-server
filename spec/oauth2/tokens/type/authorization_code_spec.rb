@@ -63,12 +63,19 @@ RSpec.describe Tokens::Type::AuthorizationCode, type: :oauth2 do
     it (:expires_in) { is_expected.to_not be_empty }
   end
 
-  describe '.is_valid' do
+  describe '.refresh_validate' do
+    let(:auth_params) { AuthParams.new({ refresh_token: 'token' }, {}) }
+    let(:errors) { [user_err(:refresh_invalid_token)] }
+    subject { auth_code_token.refresh_validate(auth_params) }
+    it { is_expected.to match_array(errors) }
+  end
+
+  describe '.create_validate' do
     context 'with invalid authorization code' do
       let(:params) { { authorization_code: 'code' } }
       let(:auth_params) { AuthParams.new(params, {}) }
       let(:errors) { [user_err(:auth_code_invalid)] }
-      subject { auth_code_token.is_valid(auth_params) }
+      subject { auth_code_token.token_validate(auth_params) }
       it { is_expected.to match_array(errors) }
     end
     context 'with a valid authorization code but invalid headers' do
@@ -79,7 +86,7 @@ RSpec.describe Tokens::Type::AuthorizationCode, type: :oauth2 do
       end
       let(:auth_params) { AuthParams.new({ authorization_code: authorization.code }, {}) }
       let(:errors) { [user_err(:auth_code_invalid_client_or_secret)] }
-      subject { auth_code_token.is_valid(auth_params) }
+      subject { auth_code_token.token_validate(auth_params) }
       it { is_expected.to match_array(errors) }
     end
     context 'with an expired authorization code and invalid headers' do
@@ -90,7 +97,7 @@ RSpec.describe Tokens::Type::AuthorizationCode, type: :oauth2 do
       end
       let(:auth_params) { AuthParams.new({ authorization_code: authorization.code }, {}) }
       let(:errors) { [user_err(:auth_code_invalid_client_or_secret), user_err(:auth_code_expired)] }
-      subject { auth_code_token.is_valid(auth_params) }
+      subject { auth_code_token.token_validate(auth_params) }
       it { is_expected.to match_array(errors) }
     end
     context 'with an invalid client id and secret' do
@@ -101,14 +108,35 @@ RSpec.describe Tokens::Type::AuthorizationCode, type: :oauth2 do
       end
       let(:auth_params) { AuthParams.new({ authorization_code: authorization.code }, { 'Authorization' => 'err:err' }) }
       let(:errors) { [user_err(:auth_code_invalid_client_or_secret)] }
-      subject { auth_code_token.is_valid(auth_params) }
+      subject { auth_code_token.token_validate(auth_params) }
       it { is_expected.to match_array(errors) }
     end
-    context 'with an invalid(can be also expired) refresh token' do
-      let(:auth_params) { AuthParams.new({ refresh_token: 'token' }, {}) }
-      let(:errors) { [user_err(:refresh_invalid_token)] }
-      subject { auth_code_token.is_valid(auth_params) }
+  end
+
+  describe '.is_valid' do
+    context 'with the action :index it validates' do
+      let(:params) { { authorization_code: 'code', action: :index } }
+      let(:auth_params) { AuthParams.new(params, {}) }
+      let(:errors) { [user_err(:auth_code_invalid)] }
+      subject { auth_code_token.token_validate(auth_params) }
       it { is_expected.to match_array(errors) }
+    end
+    context 'with the action :create it validates' do
+      let(:auth_params) do
+        AuthParams.new({ refresh_token: 'token', action: :create }, {})
+      end
+      let(:errors) { [user_err(:refresh_invalid_token)] }
+      subject { auth_code_token.refresh_validate(auth_params) }
+      it { is_expected.to match_array(errors) }
+    end
+    context 'with the action :destroy it validates' do
+      pending
+    end
+    context 'with an invalid action it raises an exception' do
+      let(:auth_params) do
+        AuthParams.new({ refresh_token: 'token' }, {})
+      end
+      subject { auth_code_token.refresh_validate(auth_params) }
     end
   end
 
