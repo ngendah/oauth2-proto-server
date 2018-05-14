@@ -97,10 +97,6 @@ module Tokens
         end
         errors
       end
-
-      def revoke_validate(auth_params)
-        []
-      end
     end
   end
 end

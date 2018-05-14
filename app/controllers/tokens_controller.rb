@@ -25,7 +25,11 @@ class TokensController < ApplicationController
                           user_err(:access_token_invalid_token),
                           :bad_request)
     end
-    # TODO: add validation
+    errors = grant.access_token.is_valid(auth_params)
+    unless errors.empty?
+      raise HttpError.new(titles(:access_token_error),
+                          errors.to_s, :bad_request)
+    end
     render json: grant.access_token.revoke(auth_params), status: :ok
   rescue HttpError => error
     render_err error

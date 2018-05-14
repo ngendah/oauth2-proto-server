@@ -38,7 +38,7 @@ class AuthParams
     unless basic_auth.nil?
       client_secret = basic_auth.split(':')
       unless client_secret.length.positive?
-        raise StandardError(internal_err(:bad_auth_header))
+        raise StandardError, internal_err(:bad_auth_header)
       end
       return client_secret[0]
     end
@@ -49,7 +49,7 @@ class AuthParams
     basic_auth = @headers['Authorization']
     client_secret = basic_auth.split(':')
     unless client_secret.length.positive?
-      raise StandardError(internal_err(:bad_auth_header))
+      raise StandardError, internal_err(:bad_auth_header)
     end
     client_secret[1]
   end
@@ -80,15 +80,19 @@ class AuthParams
     @params.key?(:refresh_token)
   end
 
-  def access_token
+  def bearer_token
     bearer = @headers['Authorization']
-    if bearer.nil? || basic_auth.split(' ').length == 1
-      raise StandardError(internal_err(:bad_auth_header))
+    if bearer.nil? || bearer.split(' ').length == 1
+      raise StandardError, internal_err(:bad_auth_header)
     end
-    type, token = basic_auth.split(' ')
+    type, token = bearer.split(' ')
     unless type == 'Bearer'
-      raise StandardError(internal_err(:bad_auth_method_expect_bearer))
+      raise StandardError, internal_err(:bad_auth_method_expect_bearer)
     end
     token
+  end
+
+  def access_token
+    @params[:token]
   end
 end

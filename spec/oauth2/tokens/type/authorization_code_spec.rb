@@ -106,7 +106,12 @@ RSpec.describe Tokens::Type::AuthorizationCode, type: :oauth2 do
                redirect_url: redirect_url,
                code: SecureRandom.uuid, expires: Time.now + 10.minutes)
       end
-      let(:auth_params) { AuthParams.new({ authorization_code: authorization.code }, { 'Authorization' => 'err:err' }) }
+      let(:auth_params) do
+        AuthParams.new(
+          { authorization_code: authorization.code },
+          'Authorization' => 'err:err'
+        )
+      end
       let(:errors) { [user_err(:auth_code_invalid_client_or_secret)] }
       subject { auth_code_token.token_validate(auth_params) }
       it { is_expected.to match_array(errors) }
@@ -187,10 +192,10 @@ RSpec.describe Tokens::Type::AuthorizationCode, type: :oauth2 do
              correlation_uid: SecureRandom.uuid
     end
     let(:authorization) do
-        create(:authorization_code, client: client,
-               redirect_url: redirect_url,
-               access_tokens: [refresh_token],
-               code: SecureRandom.uuid, expires: Time.now + 10.minutes)
+      create(:authorization_code, client: client,
+             redirect_url: redirect_url,
+             access_tokens: [refresh_token],
+             code: SecureRandom.uuid, expires: Time.now + 10.minutes)
     end
     describe 'generate a valid access token' do
       let(:params) { { refresh_token: authorization.access_tokens.first.token } }
@@ -215,6 +220,37 @@ RSpec.describe Tokens::Type::AuthorizationCode, type: :oauth2 do
       end
       it { is_expected.to_not be_nil }
       it { is_expected.to eq(refresh_token.correlation_uid) }
+    end
+  end
+  describe '.revoke_validate' do
+    context 'with an invalid authentication header' do
+      let(:params) do
+        { token: '' }
+      end
+      let(:auth_params) { AuthParams.new(params, {}) }
+      subject { auth_code_token.revoke_validate(auth_params) }
+      let(:errors) { [user_err(:bad_auth_header)] }
+      it { is_expected.to match_array(errors) }
+    end
+    context 'with an invalid token' do
+      let(:access_token) do
+      create :access_token, token: SecureRandom.uuid,
+             expires: (Time.now + 10.minutes),
+             grant_type: grant_type,
+             correlation_uid: SecureRandom.uuid
+      end
+      let(:params) do
+        { token: '' }
+      end
+      let(:auth_params) do
+        AuthParams.new(
+          params,
+          'Authorization' => "Bearer #{access_token.token}"
+        )
+      end
+      subject { auth_code_token.revoke_validate(auth_params) }
+      let(:errors) { [user_err(:token_invalid)] }
+      it { is_expected.to match_array(errors) }
     end
   end
 end

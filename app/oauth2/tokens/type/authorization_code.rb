@@ -9,8 +9,8 @@ module Tokens
         token = access_token authorization_code, options
         if options.fetch(:refresh_required, true)
           unless options.key?(:correlation_uid)
-             access_token = ::AccessToken.find_by_token token[:access_token]
-             options[:correlation_uid] = access_token.correlation_uid
+            access_token = ::AccessToken.find_by_token token[:access_token]
+            options[:correlation_uid] = access_token.correlation_uid
           end
           ref_token = refresh_token authorization_code, options
           token[:refresh_token] = ref_token[:access_token]
@@ -98,10 +98,6 @@ module Tokens
           end
         end
         errors
-      end
-
-      def revoke_validate(auth_params)
-        []
       end
     end
   end

@@ -20,7 +20,7 @@ module Tokens
         when :destroy.to_s
           errors = revoke_validate auth_params
         else
-          raise StandardError 'Invalid action'
+          raise StandardError, 'Invalid action'
         end
         errors
       end
@@ -53,7 +53,20 @@ module Tokens
       end
 
       def revoke_validate(auth_params)
-        raise NotImplementedError
+        errors = []
+        begin
+          bearer_token = ::AccessToken.find_by_token auth_params.bearer_token
+          if bearer_token.nil? || bearer_token.expired?
+            errors.append user_err(:bearer_token_invalid)
+          elsif bearer_token.refresh
+            errors.append user_err(:bearer_token_is_refresh)
+          end
+          token = ::AccessToken.find_by_token auth_params.access_token
+          errors.append(user_err(:token_invalid)) if token.nil?
+        rescue StandardError => error
+          errors.append user_err(:bad_auth_header)
+        end
+        errors
       end
 
       def timedelta_from_now(to)
