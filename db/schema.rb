@@ -19,6 +19,8 @@ ActiveRecord::Schema.define(version: 2018_04_26_082453) do
     t.boolean "refresh", default: false
     t.boolean "deleted", default: false
     t.string "grant_type", null: false
+    t.string "correlation_uid"
+    t.datetime "revoked_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["token"], name: "index_access_tokens_on_token"

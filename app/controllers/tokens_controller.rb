@@ -1,23 +1,41 @@
-class TokenController < ApplicationController
+class TokensController < ApplicationController
 
-  def create
+  def update
     auth_params = AuthParams.new(params, request.headers)
-    access_token = Tokens::RefreshToken.new[params[:refresh_token]]
-    if access_token.nil?
+    grant = Grants::Grant.from_token params[:refresh_token]
+    if grant.nil?
       raise HttpError.new(titles(:access_token_error),
                           user_err(:refresh_invalid_token), :bad_request)
     end
-    errors = access_token.is_valid(auth_params)
+    errors = grant.access_token.is_valid(auth_params)
     unless errors.empty?
       raise HttpError.new(titles(:access_token_error),
                           errors.to_s, :bad_request)
     end
-    render json: access_token.refresh(auth_params), status: :ok
+    render json: grant.access_token.refresh(auth_params), status: :ok
   rescue HttpError => error
     render_err error
   end
 
-  def index
+  def destroy
+    auth_params = AuthParams.new(params, request.headers)
+    grant = Grants::Grant.from_token params[:token]
+    if grant.nil?
+      raise HttpError.new(titles(:access_token_error),
+                          user_err(:access_token_invalid_token),
+                          :bad_request)
+    end
+    errors = grant.access_token.is_valid(auth_params)
+    unless errors.empty?
+      raise HttpError.new(titles(:access_token_error),
+                          errors.to_s, :bad_request)
+    end
+    render json: grant.access_token.revoke(auth_params), status: :ok
+  rescue HttpError => error
+    render_err error
+  end
+
+  def create
     auth_params = AuthParams.new(params, request.headers)
     grant = Grants::Grant.new[params[:grant_type]]
     if grant.nil?

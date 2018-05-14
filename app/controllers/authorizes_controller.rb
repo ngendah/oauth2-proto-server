@@ -1,6 +1,6 @@
-class AuthorizeController < ApplicationController
+class AuthorizesController < ApplicationController
 
-  def index
+  def create
     auth_params = AuthParams.new(params, request.headers)
     grant = Grants::Grant.new[params[:grant_type]]
     if grant.nil?

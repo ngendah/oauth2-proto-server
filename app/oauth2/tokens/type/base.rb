@@ -12,11 +12,25 @@ module Tokens
       end
 
       def is_valid(auth_params)
-        raise NotImplementedError
+        case auth_params.action
+        when :create.to_s
+          errors = token_validate auth_params
+        when :update.to_s
+          errors = refresh_validate auth_params
+        when :destroy.to_s
+          errors = revoke_validate auth_params
+        else
+          raise StandardError, 'Invalid action'
+        end
+        errors
       end
 
       def refresh(auth_params, options = {})
         raise NotImplementedError
+      end
+
+      def revoke(auth_params, options = {})
+        ::AccessToken.revoke auth_params.access_token
       end
 
       def type_name
@@ -28,6 +42,31 @@ module Tokens
       def token_time_to_timedelta(token)
         token[:expires_in] = timedelta_from_now token[:expires_in]
         token
+      end
+
+      def token_validate(auth_params)
+        raise NotImplementedError
+      end
+
+      def refresh_validate(auth_params)
+        raise NotImplementedError
+      end
+
+      def revoke_validate(auth_params)
+        errors = []
+        begin
+          bearer_token = ::AccessToken.find_by_token auth_params.bearer_token
+          if bearer_token.nil? || bearer_token.expired?
+            errors.append user_err(:bearer_token_invalid)
+          elsif bearer_token.refresh
+            errors.append user_err(:bearer_token_is_refresh)
+          end
+          token = ::AccessToken.find_by_token auth_params.access_token
+          errors.append(user_err(:token_invalid)) if token.nil?
+        rescue StandardError => error
+          errors.append user_err(:bad_auth_header)
+        end
+        errors
       end
 
       def timedelta_from_now(to)

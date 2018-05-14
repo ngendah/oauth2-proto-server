@@ -11,8 +11,13 @@ en:
     grant_type_invalid: 'a valid grant type is required'
     user_credentials_invalid_client_id: 'a valid client required'
     user_credentials_invalid_username_or_password: 'a valid username or password required'
+    bearer_token_invalid: 'a valid bearer token is required'
+    bearer_token_is_refresh: 'bearer token must not be a refresh token'
+    token_invalid: 'a valid token is required'
+    bad_auth_header: 'a valid authorization header, with a bearer token, is required'
     internal:
-      bad_auth_header: 'Unable to retrieve client from auth header'
+      bad_auth_header: 'unable to retrieve client from auth header'
+      bad_auth_method_expect_bearer: 'bad authorization header, expects a bearer token'
   titles:
       auth_code_error: 'Authorization code'
       access_token_error: 'Access token'

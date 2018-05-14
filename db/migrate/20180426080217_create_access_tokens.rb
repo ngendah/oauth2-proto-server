@@ -7,6 +7,8 @@ class CreateAccessTokens < ActiveRecord::Migration[5.2]
       t.boolean :refresh, default: false
       t.boolean :deleted, default: false
       t.string :grant_type, null: false, size: 80
+      t.string :correlation_uid, size: 80
+      t.timestamp :revoked_at
       t.timestamps
     end
   end
