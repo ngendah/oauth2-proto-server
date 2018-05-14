@@ -1,6 +1,6 @@
-class TokenController < ApplicationController
+class TokensController < ApplicationController
 
-  def create
+  def update
     auth_params = AuthParams.new(params, request.headers)
     grant = Grants::Grant.from_token params[:refresh_token]
     if grant.nil?
@@ -31,7 +31,7 @@ class TokenController < ApplicationController
     render_err error
   end
 
-  def index
+  def create
     auth_params = AuthParams.new(params, request.headers)
     grant = Grants::Grant.new[params[:grant_type]]
     if grant.nil?

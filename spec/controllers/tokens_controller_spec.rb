@@ -1,7 +1,7 @@
 require 'rails_helper'
 
-RSpec.describe TokenController, type: :controller do
-  describe '.index' do
+RSpec.describe TokensController, type: :controller do
+  describe '.create' do
     context 'with valid authorization code' do
       let(:client) { create :client }
       let(:grant_type) { 'authorization_code' }
@@ -17,7 +17,7 @@ RSpec.describe TokenController, type: :controller do
       end
       it {
         request.headers['Authorization'] = client_secret
-        get :index, params: params
+        post :create, params: params
         expect(response).to have_http_status(:ok)
       }
     end
@@ -33,12 +33,12 @@ RSpec.describe TokenController, type: :controller do
           grant_type: grant_type }
       end
       it {
-        get :index, params: params
+        post :create, params: params
         expect(response).to have_http_status(:ok)
       }
     end
   end
-  describe '.show' do
+  describe '.update' do
     context 'authorization code grant with valid reset token' do
       let(:client) { create :client }
       let(:grant_type) { 'authorization_code' }
@@ -57,7 +57,7 @@ RSpec.describe TokenController, type: :controller do
         { refresh_token: authorization.access_tokens.first.token }
       end
       it {
-        post :create, params: params
+        put :update, params: params
         expect(response).to have_http_status(:ok)
       }
     end
@@ -77,7 +77,7 @@ RSpec.describe TokenController, type: :controller do
           grant_type: grant_type }
       end
       it {
-        post :create, params: params
+        put :update, params: params
         expect(response).to have_http_status(:ok)
       }
     end

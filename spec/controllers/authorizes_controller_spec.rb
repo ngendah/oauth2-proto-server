@@ -2,9 +2,9 @@ require 'rails_helper'
 require 'uri'
 
 
-RSpec.describe AuthorizeController, type: :controller do
+RSpec.describe AuthorizesController, type: :controller do
 
-  describe '.index' do
+  describe '.create' do
     let(:client) { create :client }
     context 'with valid authorization code' do
       let(:redirect_url) { 'http://test.com' }
@@ -18,7 +18,7 @@ RSpec.describe AuthorizeController, type: :controller do
           client_id: authorization.client.uid }
       end
       it {
-        get :index, params: params
+        post :create, params: params
         expect(response).to have_http_status(:temporary_redirect)
         expect(response).to redirect_to(
             "#{redirect_url}?code=#{authorization.code}")
@@ -36,7 +36,7 @@ RSpec.describe AuthorizeController, type: :controller do
           client_id: authorization.client.uid }
       end
       it {
-        get :index, params: params
+        post :create, params: params
         expect(response).to have_http_status(:temporary_redirect)
         expect(response).to redirect_to(
             "#{redirect_url}?code=#{authorization.code}")
@@ -44,12 +44,14 @@ RSpec.describe AuthorizeController, type: :controller do
     end
     context 'with valid client and redirect url' do
       let(:redirect_url) { 'http://mycomp.com' } 
-      let(:params) { { grant_type: 'authorization_code',
-                      redirect_url: redirect_url,
-                      client_id: client.uid } }
+      let(:params) do
+        { grant_type: 'authorization_code',
+          redirect_url: redirect_url,
+          client_id: client.uid }
+      end
       let(:parsed_url) { URI.parse(redirect_url) }
       it {
-        get :index, params: params
+        post :create, params: params
         expect(response).to have_http_status(:temporary_redirect)
         expect(response.headers['Location']).to_not be_empty
         expect(

@@ -1,4 +1,4 @@
 Rails.application.routes.draw do
-  resources :authorize
-  resources :token
+  resource :authorizes
+  resource :tokens
 end
