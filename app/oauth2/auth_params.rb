@@ -1,5 +1,5 @@
 require 'locale'
-require 'uri'
+require 'cgi'
 
 
 class AuthParams
@@ -76,7 +76,7 @@ class AuthParams
 
   def redirect_url
     redirect_url = @params[:redirect_url]
-    redirect_url = URI.decode(redirect_url) unless redirect_url.nil?
+    redirect_url = CGI.unescape(redirect_url) unless redirect_url.nil?
     redirect_url
   end
 
