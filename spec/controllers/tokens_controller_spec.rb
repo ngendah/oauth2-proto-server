@@ -10,7 +10,9 @@ RSpec.describe TokensController, type: :controller do
                redirect_url: client.redirect_url,
                code: SecureRandom.uuid, expires: Time.now + 10.minutes)
       end
-      let(:client_secret) {"#{client.uid}:#{client.secret}"}
+      let(:client_secret) do
+        "#{client.uid}:#{Base64.urlsafe_encode64(client.secret)}"
+      end
       let(:params) do
         { code: authorization.code,
           grant_type: 'authorization_code' }

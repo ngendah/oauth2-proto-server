@@ -51,7 +51,7 @@ class AuthParams
     unless client_secret.length.positive?
       raise StandardError, internal_err(:bad_auth_header)
     end
-    client_secret[1]
+    Base64.decode64 client_secret[1]
   end
 
   def username_password

@@ -7,7 +7,9 @@ RSpec.describe AuthParams, type: :oauth2 do
       client_id: 'client_id',
       redirect_url: 'http://test.com' }
   end
-  let(:headers) { { "Authorization" => "client_id:secret" } }
+  let(:headers) do
+    { "Authorization" => "client_id:#{Base64.urlsafe_encode64('secret')}" }
+  end
   describe '.authorization_code' do
     subject { AuthParams.new(params, headers).authorization_code }
     it { is_expected.to eq(params[:code])}
