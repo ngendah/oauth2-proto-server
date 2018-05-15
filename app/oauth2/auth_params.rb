@@ -70,6 +70,10 @@ class AuthParams
     @params[:refresh_token]
   end
 
+  def refresh_required
+    @params[:refresh]
+  end
+
   def redirect_url
     redirect_url = @params[:redirect_url]
     redirect_url = URI.decode(redirect_url) unless redirect_url.nil?

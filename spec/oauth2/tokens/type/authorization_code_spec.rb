@@ -151,9 +151,9 @@ RSpec.describe Tokens::Type::AuthorizationCode, type: :oauth2 do
                redirect_url: redirect_url,
                code: SecureRandom.uuid, expires: Time.now + 10.minutes)
     end
-    let(:params) { { code: authorization.code } }
-    let(:auth_params) { AuthParams.new(params, {}) }
     context 'with a required refresh token' do
+      let(:params) { { code: authorization.code, refresh: true } }
+      let(:auth_params) { AuthParams.new(params, {}) }
       subject { auth_code_token.token(auth_params) }
       it { is_expected.to_not be_empty }
       it { is_expected.to have_key(:access_token) }
@@ -164,6 +164,8 @@ RSpec.describe Tokens::Type::AuthorizationCode, type: :oauth2 do
       it (:expires_in) { is_expected.to_not be_empty }
     end
     context 'with a correlated refresh token' do
+      let(:params) { { code: authorization.code, refresh: true } }
+      let(:auth_params) { AuthParams.new(params, {}) }
       let(:token) { auth_code_token.token(auth_params) }
       let(:correlation_uid) do
         ::AccessToken.find_by_token(token[:access_token]).correlation_uid
@@ -174,7 +176,9 @@ RSpec.describe Tokens::Type::AuthorizationCode, type: :oauth2 do
       it { is_expected.to eq(correlation_uid) }
     end
     context 'without a refresh token' do
-      subject { auth_code_token.token(auth_params, refresh_required: false) }
+      let(:params) { { code: authorization.code, refresh: false } }
+      let(:auth_params) { AuthParams.new(params, {}) }
+      subject { auth_code_token.token(auth_params) }
       it { is_expected.to_not be_empty }
       it { is_expected.to have_key(:access_token) }
       it { is_expected.to have_key(:expires_in) }
@@ -198,7 +202,10 @@ RSpec.describe Tokens::Type::AuthorizationCode, type: :oauth2 do
              code: SecureRandom.uuid, expires: Time.now + 10.minutes)
     end
     describe 'generate a valid access token' do
-      let(:params) { { refresh_token: authorization.access_tokens.first.token } }
+      let(:params) do
+        { refresh_token: authorization.access_tokens.first.token,
+          refresh: true }
+      end
       let(:auth_params) { AuthParams.new(params, {}) }
       subject { auth_code_token.refresh(auth_params) }
       it { is_expected.to_not be_empty }
