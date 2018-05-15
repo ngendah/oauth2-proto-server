@@ -4,7 +4,7 @@ require 'uri'
 
 RSpec.describe AuthorizesController, type: :controller do
 
-  describe '.create' do
+  describe '.show' do
     let(:client) { create :client }
     context 'with valid authorization code' do
       let(:redirect_url) { 'http://test.com' }
@@ -18,7 +18,7 @@ RSpec.describe AuthorizesController, type: :controller do
           client_id: authorization.client.uid }
       end
       it {
-        post :create, params: params
+        get :show, params: params
         expect(response).to have_http_status(:temporary_redirect)
         expect(response).to redirect_to(
             "#{redirect_url}?code=#{authorization.code}")
@@ -36,7 +36,7 @@ RSpec.describe AuthorizesController, type: :controller do
           client_id: authorization.client.uid }
       end
       it {
-        post :create, params: params
+        get :show, params: params
         expect(response).to have_http_status(:temporary_redirect)
         expect(response).to redirect_to(
             "#{redirect_url}?code=#{authorization.code}")
@@ -51,7 +51,7 @@ RSpec.describe AuthorizesController, type: :controller do
       end
       let(:parsed_url) { URI.parse(redirect_url) }
       it {
-        post :create, params: params
+        get :show, params: params
         expect(response).to have_http_status(:temporary_redirect)
         expect(response.headers['Location']).to_not be_empty
         expect(

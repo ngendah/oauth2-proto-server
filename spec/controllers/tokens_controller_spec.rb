@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe TokensController, type: :controller do
-  describe '.create' do
+  describe '.show' do
     context 'with valid authorization code' do
       let(:client) {create :client}
       let(:grant_type) {'authorization_code'}
@@ -17,7 +17,7 @@ RSpec.describe TokensController, type: :controller do
       end
       it {
         request.headers['Authorization'] = client_secret
-        post :create, params: params
+        get :show, params: params
         expect(response).to have_http_status(:ok)
       }
     end
@@ -33,7 +33,7 @@ RSpec.describe TokensController, type: :controller do
          grant_type: grant_type}
       end
       it {
-        post :create, params: params
+        get :show, params: params
         expect(response).to have_http_status(:ok)
       }
     end

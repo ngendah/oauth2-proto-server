@@ -105,7 +105,7 @@ RSpec.describe Tokens::Type::UserCredentials, type: :oauth2 do
 
   describe '.is_valid' do
     context 'with the action :create it validate a token request' do
-      let(:params) { { client_id: 'id', action: :create.to_s } }
+      let(:params) { { client_id: 'id', action: :show.to_s } }
       let(:auth_params) { AuthParams.new(params, {}) }
       let(:errors) { [user_err(:user_credentials_invalid_client_id)] }
       subject { usr_credentials.is_valid(auth_params) }
