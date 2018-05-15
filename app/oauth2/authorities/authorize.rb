@@ -32,7 +32,7 @@ module Authorities
           redirect_url: redirect_url, expires: token[:expires_in])
       end
       redirect_url = auth_code.redirect_url if redirect_url.nil?
-      "#{redirect_url}?code=#{CGI.escape(auth_code.code)}"
+      "#{redirect_url}?code=#{auth_code.code}"
     end
 
     protected
