@@ -1,5 +1,6 @@
 require 'token_generator'
 require 'locale'
+require 'cgi'
 
 
 module Authorities

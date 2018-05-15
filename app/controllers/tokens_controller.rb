@@ -35,7 +35,7 @@ class TokensController < ApplicationController
     render_err error
   end
 
-  def create
+  def show
     auth_params = AuthParams.new(params, request.headers)
     grant = Grants::Grant.new[params[:grant_type]]
     if grant.nil?

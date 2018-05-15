@@ -7,7 +7,7 @@ module Tokens
       def token(auth_params, options = {})
         authorization_code = auth_params.authorization_code
         token = access_token authorization_code, options
-        if options.fetch(:refresh_required, true)
+        if auth_params.refresh_required
           unless options.key?(:correlation_uid)
             access_token = ::AccessToken.find_by_token token[:access_token]
             options[:correlation_uid] = access_token.correlation_uid

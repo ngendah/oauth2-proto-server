@@ -13,7 +13,7 @@ module Tokens
 
       def is_valid(auth_params)
         case auth_params.action
-        when :create.to_s
+        when :show.to_s
           errors = token_validate auth_params
         when :update.to_s
           errors = refresh_validate auth_params

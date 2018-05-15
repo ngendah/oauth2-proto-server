@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe TokensController, type: :controller do
-  describe '.create' do
+  describe '.show' do
     context 'with valid authorization code' do
       let(:client) {create :client}
       let(:grant_type) {'authorization_code'}
@@ -10,14 +10,16 @@ RSpec.describe TokensController, type: :controller do
                redirect_url: client.redirect_url,
                code: SecureRandom.uuid, expires: Time.now + 10.minutes)
       end
-      let(:client_secret) {"#{client.uid}:#{client.secret}"}
+      let(:client_secret) do
+        "#{client.uid}:#{Base64.urlsafe_encode64(client.secret)}"
+      end
       let(:params) do
-        {authorization_code: authorization.code,
-         grant_type: 'authorization_code'}
+        { code: authorization.code,
+          grant_type: 'authorization_code' }
       end
       it {
         request.headers['Authorization'] = client_secret
-        post :create, params: params
+        get :show, params: params
         expect(response).to have_http_status(:ok)
       }
     end
@@ -33,7 +35,7 @@ RSpec.describe TokensController, type: :controller do
          grant_type: grant_type}
       end
       it {
-        post :create, params: params
+        get :show, params: params
         expect(response).to have_http_status(:ok)
       }
     end

@@ -105,7 +105,7 @@ RSpec.describe Tokens::Type::UserCredentials, type: :oauth2 do
 
   describe '.is_valid' do
     context 'with the action :create it validate a token request' do
-      let(:params) { { client_id: 'id', action: :create.to_s } }
+      let(:params) { { client_id: 'id', action: :show.to_s } }
       let(:auth_params) { AuthParams.new(params, {}) }
       let(:errors) { [user_err(:user_credentials_invalid_client_id)] }
       subject { usr_credentials.is_valid(auth_params) }
@@ -131,9 +131,11 @@ RSpec.describe Tokens::Type::UserCredentials, type: :oauth2 do
     let(:user) do
       create :user, uid: SecureRandom.uuid, password: 'password'
     end
-    let(:params) { { username: user.uid, password: 'password' } }
-    let(:auth_params) { AuthParams.new(params, {}) }
     context 'with a refresh token' do
+      let(:params) do
+        { username: user.uid, password: 'password', refresh: true }
+      end
+      let(:auth_params) { AuthParams.new(params, {}) }
       subject { usr_credentials.token(auth_params) }
       it { is_expected.to_not be_empty }
       it { is_expected.to have_key(:access_token) }
@@ -144,6 +146,8 @@ RSpec.describe Tokens::Type::UserCredentials, type: :oauth2 do
       it (:expires_in) { is_expected.to_not be_empty }
     end
     context 'without a refresh token' do
+      let(:params) { { username: user.uid, password: 'password' } }
+      let(:auth_params) { AuthParams.new(params, {}) }
       subject { usr_credentials.token(auth_params, refresh_required: false) }
       it { is_expected.to_not be_empty }
       it { is_expected.to have_key(:access_token) }
@@ -166,7 +170,9 @@ RSpec.describe Tokens::Type::UserCredentials, type: :oauth2 do
              access_tokens: [refresh_token]
     end
     describe 'generates a valid access token' do
-      let(:params) { { refresh_token: user.access_tokens.first.token } }
+      let(:params) do
+        { refresh_token: user.access_tokens.first.token, refresh: true }
+      end
       let(:auth_params) { AuthParams.new(params, {}) }
       subject { usr_credentials.refresh(auth_params) }
       it { is_expected.to_not be_empty }

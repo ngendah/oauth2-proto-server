@@ -1,5 +1,5 @@
 require 'locale'
-require 'uri'
+require 'cgi'
 
 
 class AuthParams
@@ -11,11 +11,11 @@ class AuthParams
   end
 
   def authorization_code
-    @params[:authorization_code]
+    @params[:code]
   end
 
   def authorization_code=(auth_code)
-    @params[:authorization_code] = auth_code
+    @params[:code] = auth_code
   end
 
   def action
@@ -51,7 +51,7 @@ class AuthParams
     unless client_secret.length.positive?
       raise StandardError, internal_err(:bad_auth_header)
     end
-    client_secret[1]
+    Base64.decode64 client_secret[1]
   end
 
   def username_password
@@ -70,9 +70,13 @@ class AuthParams
     @params[:refresh_token]
   end
 
+  def refresh_required
+    @params[:refresh]
+  end
+
   def redirect_url
     redirect_url = @params[:redirect_url]
-    redirect_url = URI.decode(redirect_url) unless redirect_url.nil?
+    redirect_url = CGI.unescape(redirect_url) unless redirect_url.nil?
     redirect_url
   end
 
