@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe AuthParams, type: :oauth2 do
   let(:params) do
-    { authorization_code: '123', username: 'name',
+    { code: '123', username: 'name',
       password: 'pass', refresh_token: 'token',
       client_id: 'client_id',
       redirect_url: 'http://test.com' }
@@ -10,7 +10,7 @@ RSpec.describe AuthParams, type: :oauth2 do
   let(:headers) { { "Authorization" => "client_id:secret" } }
   describe '.authorization_code' do
     subject { AuthParams.new(params, headers).authorization_code }
-    it { is_expected.to eq(params[:authorization_code])}
+    it { is_expected.to eq(params[:code])}
   end
   describe '.client_id' do
     context 'with client id on the params' do

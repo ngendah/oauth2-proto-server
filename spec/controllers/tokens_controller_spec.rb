@@ -12,8 +12,8 @@ RSpec.describe TokensController, type: :controller do
       end
       let(:client_secret) {"#{client.uid}:#{client.secret}"}
       let(:params) do
-        {authorization_code: authorization.code,
-         grant_type: 'authorization_code'}
+        { code: authorization.code,
+          grant_type: 'authorization_code' }
       end
       it {
         request.headers['Authorization'] = client_secret

@@ -72,7 +72,7 @@ RSpec.describe Tokens::Type::AuthorizationCode, type: :oauth2 do
 
   describe '.create_validate' do
     context 'with invalid authorization code' do
-      let(:params) { { authorization_code: 'code' } }
+      let(:params) { { code: 'code' } }
       let(:auth_params) { AuthParams.new(params, {}) }
       let(:errors) { [user_err(:auth_code_invalid)] }
       subject { auth_code_token.token_validate(auth_params) }
@@ -84,7 +84,7 @@ RSpec.describe Tokens::Type::AuthorizationCode, type: :oauth2 do
                redirect_url: redirect_url,
                code: SecureRandom.uuid, expires: Time.now + 10.minutes)
       end
-      let(:auth_params) { AuthParams.new({ authorization_code: authorization.code }, {}) }
+      let(:auth_params) { AuthParams.new({ code: authorization.code }, {}) }
       let(:errors) { [user_err(:auth_code_invalid_client_or_secret)] }
       subject { auth_code_token.token_validate(auth_params) }
       it { is_expected.to match_array(errors) }
@@ -95,7 +95,7 @@ RSpec.describe Tokens::Type::AuthorizationCode, type: :oauth2 do
                redirect_url: redirect_url,
                code: SecureRandom.uuid, expires: Time.now - 10.minutes)
       end
-      let(:auth_params) { AuthParams.new({ authorization_code: authorization.code }, {}) }
+      let(:auth_params) { AuthParams.new({ code: authorization.code }, {}) }
       let(:errors) { [user_err(:auth_code_invalid_client_or_secret), user_err(:auth_code_expired)] }
       subject { auth_code_token.token_validate(auth_params) }
       it { is_expected.to match_array(errors) }
@@ -108,7 +108,7 @@ RSpec.describe Tokens::Type::AuthorizationCode, type: :oauth2 do
       end
       let(:auth_params) do
         AuthParams.new(
-          { authorization_code: authorization.code },
+          { code: authorization.code },
           'Authorization' => 'err:err'
         )
       end
@@ -120,7 +120,7 @@ RSpec.describe Tokens::Type::AuthorizationCode, type: :oauth2 do
 
   describe '.is_valid' do
     context 'with the action :index it validates an access token request' do
-      let(:params) { { authorization_code: 'code', action: :index.to_s } }
+      let(:params) { { code: 'code', action: :index.to_s } }
       let(:auth_params) { AuthParams.new(params, {}) }
       let(:errors) { [user_err(:auth_code_invalid)] }
       subject { auth_code_token.token_validate(auth_params) }
@@ -151,7 +151,7 @@ RSpec.describe Tokens::Type::AuthorizationCode, type: :oauth2 do
                redirect_url: redirect_url,
                code: SecureRandom.uuid, expires: Time.now + 10.minutes)
     end
-    let(:params) { { authorization_code: authorization.code } }
+    let(:params) { { code: authorization.code } }
     let(:auth_params) { AuthParams.new(params, {}) }
     context 'with a required refresh token' do
       subject { auth_code_token.token(auth_params) }

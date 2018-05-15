@@ -11,11 +11,11 @@ class AuthParams
   end
 
   def authorization_code
-    @params[:authorization_code]
+    @params[:code]
   end
 
   def authorization_code=(auth_code)
-    @params[:authorization_code] = auth_code
+    @params[:code] = auth_code
   end
 
   def action
