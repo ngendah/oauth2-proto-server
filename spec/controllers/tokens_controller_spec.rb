@@ -15,10 +15,23 @@ RSpec.describe TokensController, type: :controller do
       end
       let(:params) do
         { code: authorization.code,
-          grant_type: 'authorization_code' }
+          grant_type: grant_type }
       end
       it {
         request.headers['Authorization'] = client_secret
+        get :show, params: params
+        expect(response).to have_http_status(:ok)
+      }
+    end
+    context 'with grant_type implicit' do
+      let(:client) { create :client }
+      let(:grant_type) { 'implicit' }
+      let(:redirect_url) { 'https://test.co' }
+      let(:params) do
+        { client_id: client.uid, redirect_url: redirect_url,
+          grant_type: grant_type }
+      end
+      it {
         get :show, params: params
         expect(response).to have_http_status(:ok)
       }

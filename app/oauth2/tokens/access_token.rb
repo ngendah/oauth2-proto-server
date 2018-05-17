@@ -3,7 +3,8 @@ module Tokens
     def initialize
       @tokens = {
         'authorization_code' => Type::AuthorizationCode.new,
-        'user_credentials' => Type::UserCredentials.new
+        'user_credentials' => Type::UserCredentials.new,
+        'implicit' => Type::Implicit.new
       }
     end
 

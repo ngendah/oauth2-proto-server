@@ -8,7 +8,8 @@ module Grants
           access_tokens, Authorities::Authorize.new
         ),
         'user_credentials' => Type::UserCredentials.new(access_tokens),
-        'client_credentials' => Type::ClientCredentials.new
+        'client_credentials' => Type::ClientCredentials.new,
+        'implicit' => Type::Implicit.new(access_tokens)
       }
     end
 
@@ -18,7 +19,7 @@ module Grants
 
     def self.from_token(token)
       access_token = ::AccessToken.find_by_token token
-      new[access_token.grant_type]
+      new[access_token.nil? ? '' : access_token.grant_type]
     end
   end
 end
