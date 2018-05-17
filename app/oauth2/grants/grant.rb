@@ -19,7 +19,7 @@ module Grants
 
     def self.from_token(token)
       access_token = ::AccessToken.find_by_token token
-      new[access_token.grant_type]
+      new[access_token.nil? ? '' : access_token.grant_type]
     end
   end
 end

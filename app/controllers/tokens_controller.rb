@@ -22,7 +22,7 @@ class TokensController < ApplicationController
     grant = Grants::Grant.from_token params[:token]
     if grant.nil?
       raise HttpError.new(titles(:access_token_error),
-                          user_err(:access_token_invalid_token),
+                          user_err(:token_invalid),
                           :bad_request)
     end
     errors = grant.access_token.is_valid(auth_params)
