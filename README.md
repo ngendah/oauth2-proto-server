@@ -19,12 +19,20 @@ $ rspec
 ```
 
 ## Running development server
-Setup
+
+using installed rails;
 ```
 $ rails db:setup
 $ rails s
 ```
 for seed values, see `db/seeds.rb`
+
+using docker;
+
+```
+$ docker build -t oauth-server:0.1 .
+$ docker run -p 3000:3000 oauth-server:0.1
+```
 
 ### Authorization code
 * code generation:
