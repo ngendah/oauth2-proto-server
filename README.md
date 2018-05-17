@@ -4,10 +4,13 @@
 
 OAuth 2 protocol server 
 =======================
-Currently implements the following grants:
+implements the following grants:
 * authorization code
 * user credentials
-* implicit, in-progress
+* implicit
+
+grants in progress:
+* client credentials
 
 ### install dependencies
 ``
@@ -67,6 +70,13 @@ curl -i -H "Authorization: c2ce91a6-98b6-4d4b-99ad-eeb174c0b6d5:c2VjcmV0" http:/
 ```
 curl -i http://localhost:3000/token?grant_type=user_credentials&client_id=c2ce91a6-98b6-4d4b-99ad-eeb174c0b6d5&username=9c965d6d-ec9d-45de-9708-13f3f62d7c4d&password=password
 ```
+if a refresh token is required, add the param `refresh=true`
+
+### implicit
+```
+curl -i http://localhost:3000/token?grant_type=implicit&client_id=c2ce91a6-98b6-4d4b-99ad-eeb174c0b6d5&redirect_url=https%3A%2F%2Ftest.com
+```
+
 if a refresh token is required, add the param `refresh=true`
 
 ### Refresh token
