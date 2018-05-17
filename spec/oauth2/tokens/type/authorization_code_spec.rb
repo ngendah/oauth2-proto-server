@@ -70,7 +70,7 @@ RSpec.describe Tokens::Type::AuthorizationCode, type: :oauth2 do
     it { is_expected.to match_array(errors) }
   end
 
-  describe '.create_validate' do
+  describe '.token_validate' do
     context 'with invalid authorization code' do
       let(:params) { { code: 'code' } }
       let(:auth_params) { AuthParams.new(params, {}) }

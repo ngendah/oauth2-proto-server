@@ -8,7 +8,8 @@ module Grants
           access_tokens, Authorities::Authorize.new
         ),
         'user_credentials' => Type::UserCredentials.new(access_tokens),
-        'client_credentials' => Type::ClientCredentials.new
+        'client_credentials' => Type::ClientCredentials.new,
+        'implicit' => Type::Implicit.new(access_tokens)
       }
     end
 
