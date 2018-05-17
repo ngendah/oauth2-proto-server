@@ -1,14 +1,18 @@
 module Tokens
   module Type
+
     class Implicit < AuthorizationCode
-      included Lib::AuthorizationCode
+      include Lib::AuthorizationCode
 
       def token(auth_params, options = {})
-        auth_code = generate_code(auth_params, options)
+        auth_code = generate_code auth_params, options
         auth_params.authorization_code = auth_code[:code]
-        token = super.token auth_params, options
-        token_type = options.fetch(:token_type, 'Bearer')
-        "#{auth_code[:redirect_url]}#access_token=#{token[:access_token]}&token_type=#{token_type}&expires_in=#{token[:expires_in]}"
+        token = super auth_params, options
+        result = "#{auth_code[:redirect_url]}#access_token=#{token[:access_token]}&expires_in=#{token[:expires_in]}"
+        if auth_params.refresh_required
+          result += "&refresh_token=#{token[:refresh_token]}"
+        end
+        result
       end
 
       def type_name
