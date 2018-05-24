@@ -37,6 +37,19 @@ module Tokens
         raise NotImplementedError
       end
 
+      def check(auth_params, options = {})
+        access_token = ::AccessToken.find_by_token auth_params.access_token
+        token = {}
+        unless access_token.nil?
+          token = token_time_to_timedelta(
+            expires_in: access_token.expires,
+            grant_type: access_token.grant_type,
+            token_type: access_token.refresh ? 'refresh' : 'access'
+          )
+        end
+        token
+      end
+
       protected
 
       def token_time_to_timedelta(token)
