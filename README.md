@@ -28,8 +28,7 @@ There 2 ways:
         ```
         $ rails s
         ```
-2. With docker
-    * It requires [docker](www.docker.com).
+2. With [docker](www.docker.com)
     * Build the docker image,
         ```
         $ docker build -t oauth-server:0.1 .
