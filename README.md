@@ -15,7 +15,7 @@ It implements the following grants:
 There 2 ways:
 
 1. With a locally installed ruby on rails
-    * Clone the project onto your machine.
+    * Clone the project.
     * Install dependencies by executing the command,
         ```
         $ bundle install
@@ -29,7 +29,7 @@ There 2 ways:
         $ rails s
         ```
 2. With docker
-    * It requires [docker](www.docker.com) to be locally installed.
+    * It requires [docker](www.docker.com).
     * Build the docker image,
         ```
         $ docker build -t oauth-server:0.1 .
