@@ -55,8 +55,11 @@ Seed values for the development server are available [here](./db/seeds.rb)
 
 * [Check token](./docs/check-token.md)
 
-## References
-[OAuth 2.0 framework](https://tools.ietf.org/html/rfc6749)
-[OAuth 2.0 token revocation](https://tools.ietf.org/html/rfc7009)
+## OAuth 2.0 Reference
+[Framework](https://tools.ietf.org/html/rfc6749)
+
+[Token revocation](https://tools.ietf.org/html/rfc7009)
+
 [Proof key for code exchange (PKCE)](https://tools.ietf.org/html/rfc7636)
-[AOuth 2.0 threat model](https://tools.ietf.org/html/rfc6819)
+
+[Threat model](https://tools.ietf.org/html/rfc6819)
