@@ -29,11 +29,11 @@ There 2 ways:
         $ rails s
         ```
 2. With [docker](www.docker.com)
-    * Build the docker image,
+    * Build the image,
         ```
         $ docker build -t oauth-server:0.1 .
         ```
-    * Run the docker image,
+    * Run the image,
         ```
         $ docker run -p 3000:3000 oauth-server:0.1
         ```
@@ -54,3 +54,9 @@ Seed values for the development server are available [here](./db/seeds.rb)
 * [Revoke token](./docs/revoke-token.md)
 
 * [Check token](./docs/check-token.md)
+
+## References
+[OAuth 2.0 framework](https://tools.ietf.org/html/rfc6749)
+[OAuth 2.0 token revocation](https://tools.ietf.org/html/rfc7009)
+[Proof key for code exchange (PKCE)](https://tools.ietf.org/html/rfc7636)
+[AOuth 2.0 threat model](https://tools.ietf.org/html/rfc6819)
