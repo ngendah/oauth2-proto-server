@@ -22,10 +22,13 @@ RSpec.describe Tokens::Type::Base, type: :oauth2 do
       let(:auth_params) do
         AuthParams.new({ token: access_token.token }, {})
       end
-      subject { base.check(auth_params, {}) }
+      subject { base.inspect(auth_params) }
       it { is_expected.to_not be_empty }
       it { is_expected.to have_key(:token_type) }
       it { is_expected.to have_key(:grant_type) }
+      it { is_expected.to have_key(:expires_in) }
+      it { is_expected.to have_key(:active) }
+      it { is_expected.to have_key(:scope) }
     end
   end
 end

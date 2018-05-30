@@ -37,17 +37,20 @@ module Tokens
         raise NotImplementedError
       end
 
-      def check(auth_params, options = {})
+      def inspect(auth_params)
         access_token = ::AccessToken.find_by_token auth_params.access_token
-        token = {}
-        unless access_token.nil?
-          token = token_time_to_timedelta(
+        introspection = { active: false }
+        unless access_token.nil? || access_token.expired?
+          introspection = {
             expires_in: access_token.expires,
+            active: !access_token.expired?,
             grant_type: access_token.grant_type,
+            scope: access_token.scopes,
             token_type: access_token.refresh ? 'refresh' : 'access'
-          )
+          }
+          introspection = token_time_to_timedelta introspection
         end
-        token
+        introspection
       end
 
       protected
