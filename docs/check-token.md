@@ -5,7 +5,13 @@ Check token validity
 `GET` `/check`
 
 * Request:
-     
+    
+    Headers:
+    
+    ```
+     Authorization: Bearer access-token
+     ```
+    
     Parameters:
     ```
     token=[refresh_token | access_token]
@@ -22,21 +28,24 @@ Check token validity
     `Content`:
           
         {
+            active: [true | false]
             expires_in:
             grant_type:
-            scope:[]
+            scope: []
             token_type: [access | refresh]
+            client_id:
+            username:
         }
 
     <b>On Error</b>:
     
     `Code`: 
     
-        `404 Bad Request`
+        `200 Ok`
      
      `Content`:
      
-        `{ Errors: [] }`
+        `{ active: false }`
 
 * Sample request:
     ```
