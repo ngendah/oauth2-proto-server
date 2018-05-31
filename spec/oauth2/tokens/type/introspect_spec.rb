@@ -2,9 +2,9 @@ require 'rails_helper'
 require 'locale'
 
 
-RSpec.describe Tokens::Type::Introspection, type: :oauth2 do
-  let(:introspection) { Tokens::Type::Introspection.new }
-  describe '.inspect' do
+RSpec.describe Tokens::Type::Introspect, type: :oauth2 do
+  let(:introspection) { Tokens::Type::Introspect.new }
+  describe '.query' do
     describe 'authorization code grant' do
       context 'with a valid access token' do
         let(:client) { create :client }
@@ -24,7 +24,7 @@ RSpec.describe Tokens::Type::Introspection, type: :oauth2 do
             {token: authorization_code.access_tokens.first.token}, {}
           )
         end
-        subject { introspection.inspect(auth_params) }
+        subject { introspection.query(auth_params) }
         it { is_expected.to_not be_empty }
         it { is_expected.to have_key(:active) }
         it { is_expected.to have_key(:client_id) }
@@ -49,7 +49,7 @@ RSpec.describe Tokens::Type::Introspection, type: :oauth2 do
             { token: authorization_code.access_tokens.first.token }, {}
           )
         end
-        subject { introspection.inspect(auth_params) }
+        subject { introspection.query(auth_params) }
         it { is_expected.to_not be_empty }
         it { is_expected.to have_key(:active) }
         it { is_expected.to_not have_key(:client_id) }
@@ -73,7 +73,7 @@ RSpec.describe Tokens::Type::Introspection, type: :oauth2 do
             { token: user.access_tokens.first.token }, {}
           )
         end
-        subject { introspection.inspect(auth_params) }
+        subject { introspection.query(auth_params) }
         it { is_expected.to_not be_empty }
         it { is_expected.to have_key(:active) }
         it { is_expected.to have_key(:username) }
