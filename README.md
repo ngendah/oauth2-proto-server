@@ -4,7 +4,7 @@
 
 OAuth 2 protocol server 
 =======================
-An extensible and modular OAuth2 server.
+A modular and extensible OAuth2 server.
 
 It implements the following grants:
 * authorization code
