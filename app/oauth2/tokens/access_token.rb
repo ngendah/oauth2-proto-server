@@ -5,7 +5,7 @@ module Tokens
         'authorization_code' => Type::AuthorizationCode.new,
         'user_credentials' => Type::UserCredentials.new,
         'implicit' => Type::Implicit.new,
-        'introspect' => Type::Introspection.new
+        'introspect' => Type::Introspect.new
       }
     end
 
