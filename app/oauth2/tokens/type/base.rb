@@ -37,7 +37,7 @@ module Tokens
         raise NotImplementedError
       end
 
-      def inspect(auth_params)
+      def query(auth_params)
         access_token = ::AccessToken.find_by_token auth_params.access_token
         introspection = { active: false }
         unless access_token.nil? || access_token.expired?

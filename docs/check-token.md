@@ -49,6 +49,6 @@ Check token validity
 
 * Sample request:
     ```
-    $ curl -i http://localhost:3000/check? \
+    $ curl -i -H "Authorization: Bearer access-token" http://localhost:3000/check? \
     token=
     ```

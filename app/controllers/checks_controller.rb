@@ -8,7 +8,7 @@ class ChecksController < ApplicationController
                           user_err(:token_invalid),
                           :not_found)
     end
-    render json: grant.introspect.inspect(auth_params), status: :ok
+    render json: grant.introspect.query(auth_params), status: :ok
   rescue HttpError => error
     render json: { active: false }, status: :ok
   end

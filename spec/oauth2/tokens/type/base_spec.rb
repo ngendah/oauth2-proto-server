@@ -11,7 +11,7 @@ RSpec.describe Tokens::Type::Base, type: :oauth2 do
   end
   let(:base) { Tokens::Type::Base.new }
 
-  describe '.check' do
+  describe '.query' do
     context 'with a valid access token' do
       let(:grant_type) { 'authorization_code' }
       let(:access_token) do
@@ -22,7 +22,7 @@ RSpec.describe Tokens::Type::Base, type: :oauth2 do
       let(:auth_params) do
         AuthParams.new({ token: access_token.token }, {})
       end
-      subject { base.inspect(auth_params) }
+      subject { base.query(auth_params) }
       it { is_expected.to_not be_empty }
       it { is_expected.to have_key(:token_type) }
       it { is_expected.to have_key(:grant_type) }

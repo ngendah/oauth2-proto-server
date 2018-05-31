@@ -1,8 +1,8 @@
 module Tokens
   module Type
-    class Introspection < Base
+    class Introspect < Base
 
-      def inspect(auth_params)
+      def query(auth_params)
         introspection = super auth_params
         if introspection[:active]
           if introspection[:grant_type] == :authorization_code.to_s ||

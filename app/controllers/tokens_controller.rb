@@ -2,7 +2,7 @@ class TokensController < ApplicationController
 
   def update
     auth_params = AuthParams.new(params, request.headers)
-    grant = Grants::Grant.from_token params[:refresh_token]
+    grant = Grants::Grant.from_token auth_params.refresh_token
     if grant.nil?
       raise HttpError.new(titles(:access_token_error),
                           user_err(:refresh_invalid_token), :bad_request)
@@ -19,7 +19,7 @@ class TokensController < ApplicationController
 
   def destroy
     auth_params = AuthParams.new(params, request.headers)
-    grant = Grants::Grant.from_token params[:token]
+    grant = Grants::Grant.from_token auth_params.access_token
     if grant.nil?
       raise HttpError.new(titles(:access_token_error),
                           user_err(:token_invalid),
@@ -37,7 +37,7 @@ class TokensController < ApplicationController
 
   def show
     auth_params = AuthParams.new(params, request.headers)
-    grant = Grants::Grant.new[params[:grant_type]]
+    grant = Grants::Grant[auth_params.grant_type]
     if grant.nil?
       raise HttpError.new(titles(:access_token_error),
                           user_err(:grant_type_invalid), :bad_request)

@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Tokens::AccessToken, type: :oauth2 do
-  let(:access_token) { Tokens::AccessToken.new }
+  let(:access_token) { Tokens::AccessToken }
   describe 'subscript operator' do
     context 'with authorization code type' do
       subject { access_token['authorization_code'] }

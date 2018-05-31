@@ -1,25 +1,20 @@
 module Grants
 
   class Grant
-    def initialize
-      access_tokens = Tokens::AccessToken.new
-      @grants = {
+    def self.[](key)
+      access_tokens = Tokens::AccessToken
+      {
         'authorization_code' => Type::AuthorizationCode.new(
           access_tokens, Authorities::Authorize.new
         ),
         'user_credentials' => Type::UserCredentials.new(access_tokens),
-        'client_credentials' => Type::ClientCredentials.new,
         'implicit' => Type::Implicit.new(access_tokens)
-      }
-    end
-
-    def [](key)
-      @grants[key]
+      }[key]
     end
 
     def self.from_token(token)
       access_token = ::AccessToken.find_by_token token
-      new[access_token.nil? ? '' : access_token.grant_type]
+      self[access_token.nil? ? '' : access_token.grant_type]
     end
   end
 end
