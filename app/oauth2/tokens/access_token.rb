@@ -1,16 +1,12 @@
 module Tokens
   class AccessToken
-    def initialize
-      @tokens = {
-        'authorization_code' => Type::AuthorizationCode.new,
-        'user_credentials' => Type::UserCredentials.new,
-        'implicit' => Type::Implicit.new,
-        'introspect' => Type::Introspect.new
-      }
-    end
-
-    def [](key)
-      @tokens[key]
+    def self.[](key)
+      {
+        'authorization_code' => Type::AuthorizationCode,
+        'user_credentials' => Type::UserCredentials,
+        'implicit' => Type::Implicit,
+        'introspect' => Type::Introspect
+      }[key].new
     end
   end
 end

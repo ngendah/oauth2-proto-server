@@ -2,7 +2,7 @@ module Grants
 
   class Grant
     def initialize
-      access_tokens = Tokens::AccessToken.new
+      access_tokens = Tokens::AccessToken
       @grants = {
         'authorization_code' => Type::AuthorizationCode.new(
           access_tokens, Authorities::Authorize.new
