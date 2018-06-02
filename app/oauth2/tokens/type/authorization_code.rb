@@ -53,19 +53,17 @@ module Tokens
       def refresh_token(authorization_code, options = {})
         auth_code = ::AuthorizationCode.find_by_code authorization_code
         refresh_token = auth_code.refresh_token
-        if refresh_token.nil? || refresh_token.expired?
-          expires_in = options.fetch :expires_in, 20.minutes
-          correlation_uid = options.fetch :correlation_uid, nil
-          refresh_token = TokenGenerator.token :default, {timedelta: expires_in}
-          auth_code.access_tokens << ::AccessToken.create(
-            token: refresh_token[:access_token], refresh: true,
-            expires: refresh_token[:expires_in], grant_type: type_name,
-            correlation_uid: correlation_uid
-          )
-        else
-          refresh_token = {access_token: refresh_token.token,
-                           expires_in: refresh_token.expires}
+        unless refresh_token.nil? || refresh_token.invalid?
+          refresh_token.revoke
         end
+        expires_in = options.fetch :expires_in, 20.minutes
+        correlation_uid = options.fetch :correlation_uid, nil
+        refresh_token = TokenGenerator.token :default, {timedelta: expires_in}
+        auth_code.access_tokens << ::AccessToken.create(
+          token: refresh_token[:access_token], refresh: true,
+          expires: refresh_token[:expires_in], grant_type: type_name,
+          correlation_uid: correlation_uid
+        )
         token_time_to_timedelta refresh_token
       end
 

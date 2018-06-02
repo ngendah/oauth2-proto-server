@@ -5,8 +5,21 @@ class AccessToken < ApplicationRecord
     expires < Time.now
   end
 
+  def invalid?
+    deleted == true || revoked_at != nil || self.expired?
+  end
+
   def self.valid?(token, is_refresh = false)
-    where(token: token, refresh: is_refresh, deleted: false).count.positive?
+    where(
+          token: token,
+          refresh: is_refresh,
+          deleted: false,
+          revoked_at: nil
+    ).count.positive?
+  end
+
+  def revoke
+    update(deleted: true, revoked_at: Time.now)
   end
 
   def self.revoke(token)
