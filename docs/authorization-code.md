@@ -21,7 +21,7 @@ Authorization code grant type
     
     `Code`: 
     
-        `307 Temporary Redirect`
+        `302 Found`
     
     `Headers`:
     

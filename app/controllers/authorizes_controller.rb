@@ -11,7 +11,7 @@ class AuthorizesController < ApplicationController
     unless errors.empty?
       raise HttpError.new(titles(:auth_code_error), errors.to_s, :bad_request)
     end
-    render json: {}, status: :temporary_redirect,
+    render json: {}, status: :found,
            location: grant.authorize.code(auth_params)
   rescue HttpError => error
     render_err error
