@@ -76,7 +76,7 @@ RSpec.describe Tokens::Type::Introspect, type: :oauth2 do
         subject { introspection.query(auth_params) }
         it { is_expected.to_not be_empty }
         it { is_expected.to have_key(:active) }
-        it { is_expected.to have_key(:username) }
+        it { is_expected.to have_key(:user_uid) }
         it { expect(subject[:active]).to eq(true) }
       end
     end

@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe AuthParams, type: :oauth2 do
   let(:params) do
-    { code: '123', username: 'name',
+    { code: '123', user_uid: SecureRandom.uuid,
       password: 'pass', refresh_token: 'token',
       client_id: 'client_id',
       redirect_url: 'http://test.com' }
@@ -30,9 +30,9 @@ RSpec.describe AuthParams, type: :oauth2 do
       it { is_expected.to eq('secret') }
     end
   end
-  describe '.username_and_password' do
-    subject { AuthParams.new(params, headers).username_password }
-    it { is_expected.to match_array([params[:username], params[:password]]) }
+  describe '.user_uid_and_password' do
+    subject { AuthParams.new(params, headers).user_uid_password }
+    it { is_expected.to match_array([params[:user_uid], params[:password]]) }
   end
   describe '.refresh_token' do
     subject { AuthParams.new(params, headers).refresh_token }

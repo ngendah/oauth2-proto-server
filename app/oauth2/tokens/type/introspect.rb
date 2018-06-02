@@ -11,7 +11,7 @@ module Tokens
             introspection[:client_id] = auth_code.client.uid
           elsif introspection[:grant_type] == :user_credentials.to_s
             user = ::User.find_by_token auth_params.access_token
-            introspection[:username] = user.uid
+            introspection[:user_uid] = user.uid
           end
         end
         introspection
