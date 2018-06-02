@@ -44,7 +44,7 @@ RSpec.describe TokensController, type: :controller do
       end
       let(:client) {create :client, users: [user]}
       let(:params) do
-        {username: user.uid, password: password, client_id: client.uid,
+        {user_uid: user.uid, password: password, client_id: client.uid,
          grant_type: grant_type}
       end
       it {
@@ -77,7 +77,7 @@ RSpec.describe TokensController, type: :controller do
       }
     end
     context 'user credentials with valid reset token' do
-      let(:grant_type) {'user_credentials'}
+      let(:grant_type) { 'user_credentials' }
       let(:refresh_token) do
         create :access_token, token: SecureRandom.uuid,
                expires: (Time.now + 10.minutes),

@@ -54,12 +54,12 @@ class AuthParams
     Base64.decode64 client_secret[1]
   end
 
-  def username_password
-    [@params[:username], @params[:password]]
+  def user_uid_password
+    [@params[:user_uid], @params[:password]]
   end
 
-  def username=(username)
-    @params[:username] = username
+  def user_uid=(user_uid)
+    @params[:user_uid] = user_uid
   end
 
   def password=(password)

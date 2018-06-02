@@ -10,7 +10,7 @@ en:
     refresh_token_expired: 'refresh token is expired'
     grant_type_invalid: 'a valid grant type is required'
     user_credentials_invalid_client_id: 'a valid client required'
-    user_credentials_invalid_username_or_password: 'a valid username or password required'
+    user_credentials_invalid_user_uid_or_password: 'a valid user unique identifier or password required'
     bearer_token_invalid: 'a valid bearer token is required'
     bearer_token_is_refresh: 'bearer token must not be a refresh token'
     token_invalid: 'a valid token is required'

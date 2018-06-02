@@ -3,7 +3,7 @@ module Tokens
     class UserCredentials < Base
 
       def token(auth_params, options = {})
-        user_id, = auth_params.username_password
+        user_id, = auth_params.user_uid_password
         token = access_token user_id, options
         if auth_params.refresh_required
           unless options.key?(:correlation_uid)
@@ -24,7 +24,7 @@ module Tokens
         refresh_token = auth_params.refresh_token
         user = ::User.find_by_token refresh_token
         access_token = ::AccessToken.find_by_token refresh_token
-        auth_params.username = user.uid
+        auth_params.user_uid = user.uid
         auth_params.password = ''
         options[:correlation_uid] = access_token.correlation_uid
         token auth_params, options
@@ -74,11 +74,11 @@ module Tokens
         if client.nil?
           errors.append(user_err(:user_credentials_invalid_client_id))
         else
-          user_id, password = auth_params.username_password
+          user_id, password = auth_params.user_uid_password
           user = client.find_user_by_uid user_id
           if user.nil? || !user.authenticate(password)
             errors.append(
-              user_err(:user_credentials_invalid_username_or_password))
+              user_err(:user_credentials_invalid_user_uid_or_password))
           end
         end
         errors

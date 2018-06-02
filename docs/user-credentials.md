@@ -11,7 +11,7 @@ User credentials grant type
     ```
     grant_type=user_credentials
     client_id=
-    username=
+    user_uid=
     password=
     [refresh = true | false]
     ```
@@ -48,6 +48,6 @@ User credentials grant type
     $curl -i http://localhost:3000/token? \ 
         grant_type=user_credentials \
         &client_id=c2ce91a6-98b6-4d4b-99ad-eeb174c0b6d5 \
-        &username=9c965d6d-ec9d-45de-9708-13f3f62d7c4d \
+        &user_uid=9c965d6d-ec9d-45de-9708-13f3f62d7c4d \
         &password=password
     ```

@@ -59,30 +59,30 @@ RSpec.describe Tokens::Type::UserCredentials, type: :oauth2 do
       subject { usr_credentials.token_validate(auth_params) }
       it { is_expected.to match_array(errors) }
     end
-    context 'with valid client id and invalid username' do
+    context 'with valid client id and invalid user uid' do
       let(:user) do
         create :user, uid: SecureRandom.uuid, password: 'password'
       end
       let(:client) { create :client, users: [user] }
-      let(:params) { { username: '', password: '', client_id: client.uid } }
+      let(:params) { { user_uid: '', password: '', client_id: client.uid } }
       let(:auth_params) { AuthParams.new(params, {}) }
       let(:errors) do
-        [user_err(:user_credentials_invalid_username_or_password)]
+        [user_err(:user_credentials_invalid_user_uid_or_password)]
       end
       subject { usr_credentials.token_validate(auth_params) }
       it { is_expected.to match_array(errors) }
     end
-    context 'with valid client id, username and invalid password' do
+    context 'with valid client id, user uid and invalid password' do
       let(:user) do
         create :user, uid: SecureRandom.uuid, password: 'password'
       end
       let(:client) { create :client, users: [user] }
       let(:params) do
-        { username: user.uid, password: '', client_id: client.uid }
+        { user_uid: user.uid, password: '', client_id: client.uid }
       end
       let(:auth_params) { AuthParams.new(params, {}) }
       let(:errors) do
-        [user_err(:user_credentials_invalid_username_or_password)]
+        [user_err(:user_credentials_invalid_user_uid_or_password)]
       end
       subject { usr_credentials.token_validate(auth_params) }
       it { is_expected.to match_array(errors) }
@@ -133,7 +133,7 @@ RSpec.describe Tokens::Type::UserCredentials, type: :oauth2 do
     end
     context 'with a refresh token' do
       let(:params) do
-        { username: user.uid, password: 'password', refresh: true }
+        { user_uid: user.uid, password: 'password', refresh: true }
       end
       let(:auth_params) { AuthParams.new(params, {}) }
       subject { usr_credentials.token(auth_params) }
@@ -146,7 +146,7 @@ RSpec.describe Tokens::Type::UserCredentials, type: :oauth2 do
       it (:expires_in) { is_expected.to_not be_empty }
     end
     context 'without a refresh token' do
-      let(:params) { { username: user.uid, password: 'password' } }
+      let(:params) { { user_uid: user.uid, password: 'password' } }
       let(:auth_params) { AuthParams.new(params, {}) }
       subject { usr_credentials.token(auth_params, refresh_required: false) }
       it { is_expected.to_not be_empty }

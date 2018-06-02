@@ -34,7 +34,7 @@ Check token validity
             scope: []
             token_type: [access | refresh]
             client_id:
-            username:
+            user_uid:
         }
 
     <b>On Error</b>:
