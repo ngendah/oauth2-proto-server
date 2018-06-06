@@ -37,8 +37,6 @@ There 2 ways:
         ```
         $ docker run -p 3000:3000 oauth-server:0.1
         ```
-    Depending on your operating system, execution of docker commands may require `root` permissions or use of `sudo`.
-
 
 Seed values for the development server are available [here](./db/seeds.rb)
 
