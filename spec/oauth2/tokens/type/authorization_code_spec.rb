@@ -35,10 +35,10 @@ RSpec.describe Tokens::Type::AuthorizationCode, type: :oauth2 do
     it { is_expected.to_not be_empty }
     it { is_expected.to have_key(:access_token) }
     it { is_expected.to have_key(:expires_in) }
-    it (:expires_in) { is_expected.to_not eq(Time.now) }
-    it (:access_token) { is_expected.to_not eq(expired_token[:access_token]) }
-    it (:access_token) { is_expected.to_not be_empty }
-    it (:expires_in) { is_expected.to_not be_empty }
+    it { expect(subject[:expires_in]).to_not be_nil }
+    it { expect(subject[:access_token]).to_not be_nil }
+    it { expect(subject[:expires_in]).to_not eq(Time.now) }
+    it { expect(subject[:access_token]).to_not eq(expired_token[:access_token]) }
   end
 
   describe '.refresh_token' do
@@ -57,10 +57,10 @@ RSpec.describe Tokens::Type::AuthorizationCode, type: :oauth2 do
     it { is_expected.to_not be_empty }
     it { is_expected.to have_key(:access_token) }
     it { is_expected.to have_key(:expires_in) }
-    it (:expires_in) { is_expected.to_not eq(Time.now) }
-    it (:access_token) { is_expected.to_not eq(expired_token[:access_token]) }
-    it (:access_token) { is_expected.to_not be_empty }
-    it (:expires_in) { is_expected.to_not be_empty }
+    it { expect(subject[:expires_in]).to_not be_nil }
+    it { expect(subject[:access_token]).to_not be_nil }
+    it { expect(subject[:expires_in]).to_not eq(Time.now) }
+    it { expect(subject[:access_token]).to_not eq(expired_token[:access_token]) }
   end
 
   describe '.refresh_validate' do
@@ -159,9 +159,9 @@ RSpec.describe Tokens::Type::AuthorizationCode, type: :oauth2 do
       it { is_expected.to have_key(:access_token) }
       it { is_expected.to have_key(:expires_in) }
       it { is_expected.to have_key(:refresh_token) }
-      it (:expires_in) { is_expected.to_not eq(Time.now) }
-      it (:access_token) { is_expected.to_not be_empty }
-      it (:expires_in) { is_expected.to_not be_empty }
+      it { expect(subject[:expires_in]).to_not be_nil }
+      it { expect(subject[:access_token]).to_not be_nil }
+      it { expect(subject[:expires_in]).to_not eq(Time.now) }
     end
     context 'with a correlated refresh token' do
       let(:params) { { code: authorization.code, refresh: true } }
@@ -183,9 +183,9 @@ RSpec.describe Tokens::Type::AuthorizationCode, type: :oauth2 do
       it { is_expected.to have_key(:access_token) }
       it { is_expected.to have_key(:expires_in) }
       it { is_expected.to_not have_key(:refresh_token) }
-      it (:expires_in) { is_expected.to_not eq(Time.now) }
-      it (:access_token) { is_expected.to_not be_empty }
-      it (:expires_in) { is_expected.to_not be_empty }
+      it { expect(subject[:expires_in]).to_not be_nil }
+      it { expect(subject[:access_token]).to_not be_nil }
+      it { expect(subject[:expires_in]).to_not eq(Time.now) }
     end
   end
   describe '.refresh' do
@@ -212,10 +212,10 @@ RSpec.describe Tokens::Type::AuthorizationCode, type: :oauth2 do
       it { is_expected.to have_key(:access_token) }
       it { is_expected.to have_key(:expires_in) }
       it { is_expected.to have_key(:refresh_token) }
-      it (:expires_in) { is_expected.to_not eq(Time.now) }
-      it (:access_token) { is_expected.to_not be_empty }
-      it (:expires_in) { is_expected.to_not be_empty }
-    end
+      it { expect(subject[:expires_in]).to_not be_nil }
+      it { expect(subject[:access_token]).to_not be_nil }
+      it { expect(subject[:expires_in]).to_not eq(Time.now) }
+     end
     describe 'generates a correlated access token' do
       let(:params) do
         { refresh_token: authorization.access_tokens.first.token }
