@@ -53,7 +53,7 @@ $curl -i http://localhost:3000/authorize? \
  * Sample result:
  
  ```
-HTTP/1.1 307 Temporary Redirect
+HTTP/1.1 302 Found
 Location: https://test.com?code=G_Ds4r17gd23134OniYYiA
 ```
 
