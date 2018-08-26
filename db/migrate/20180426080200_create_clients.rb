@@ -6,6 +6,7 @@ class CreateClients < ActiveRecord::Migration[5.2]
       t.string :redirect_url, size: 255
       t.string :grant_types, array: true
       t.integer :scope, array: true
+      t.boolean :pkce, default: false
       t.timestamps
     end
 
