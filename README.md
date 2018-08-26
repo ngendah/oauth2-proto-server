@@ -7,7 +7,7 @@ OAuth 2 protocol server
 A modular and extensible OAuth2 server.
 
 It implements the following grants:
-* authorization code
+* authorization code with PKCE support
 * user credentials
 * implicit
 
