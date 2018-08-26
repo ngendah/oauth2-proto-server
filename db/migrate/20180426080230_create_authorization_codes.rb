@@ -7,6 +7,8 @@ class CreateAuthorizationCodes < ActiveRecord::Migration[5.2]
       t.timestamp :expires, null: false
       t.integer :scopes, array: true
       t.integer :redeem_attempts, default: 0
+      t.string :code_challenge
+      t.string :code_challenge_method, size: 25
       t.timestamps
     end
 

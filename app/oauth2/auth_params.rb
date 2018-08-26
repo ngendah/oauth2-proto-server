@@ -99,4 +99,16 @@ class AuthParams
   def access_token
     @params[:token]
   end
+
+  def code_challenge
+    @params[:code_challenge]
+  end
+
+  def code_challenge_method
+    @params[:code_challenge_method]
+  end
+
+  def code_verifier
+    @params[:code_verifier]
+  end
 end

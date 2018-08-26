@@ -46,6 +46,9 @@ ActiveRecord::Schema.define(version: 2018_04_26_082453) do
     t.string "redirect_url"
     t.datetime "expires", null: false
     t.integer "scopes"
+    t.integer "redeem_attempts", default: 0
+    t.string "code_challenge"
+    t.string "code_challenge_method"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["client_id"], name: "index_authorization_codes_on_client_id"
@@ -58,6 +61,7 @@ ActiveRecord::Schema.define(version: 2018_04_26_082453) do
     t.string "redirect_url"
     t.string "grant_types"
     t.integer "scope"
+    t.boolean "pkce", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["uid"], name: "index_clients_on_uid"

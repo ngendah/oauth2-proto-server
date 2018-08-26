@@ -1,3 +1,7 @@
+require 'base64'
+require 'digest'
+
+
 module Tokens
 
   module Type
@@ -89,14 +93,32 @@ module Tokens
             client = code.client
             is_valid = (client.uid == client_id && client.secret == secret)
             unless is_valid
-              errors.append(user_err(:auth_code_invalid_client_or_secret))
+              errors.append user_err(:auth_code_invalid_client_or_secret)
+            end
+            if client.pkce
+              code_challenge = code.code_challenge
+              calculated_code_challenge = generate_code_challenge(
+                  code.code_challenge_method, auth_params.code_verifier)
+              if code_challenge != calculated_code_challenge
+                errors.append user_err(:auth_code_invalid_grant_error)
+              end
             end
           rescue StandardError => error
-            errors.append(user_err(:auth_code_invalid_client_or_secret))
+            errors.append user_err(:auth_code_invalid_client_or_secret)
           end
         end
         errors
       end
+
+      def generate_code_challenge(code_challenge_method, code_verifier)
+        code_challenge = code_verifier
+        if code_challenge_method == "SHA256"
+          digest = Digest::SHA256.hexdigest code_verifier
+          code_challenge = Base64.urlsafe_encode64 digest
+        end
+        code_challenge
+      end
+
     end
   end
 end

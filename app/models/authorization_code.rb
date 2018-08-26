@@ -31,6 +31,10 @@ class AuthorizationCode < ApplicationRecord
     expires <= Time.now
   end
 
+  def expire!
+    self.update(expires: Time.now - 2.seconds)
+  end
+
   def self.find_by_client_id(client_id)
     # TODO: order by time created
     joins(:client).where(clients: { uid: client_id }).where('expires > ?',
