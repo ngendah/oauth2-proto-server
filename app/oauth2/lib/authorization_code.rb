@@ -15,7 +15,8 @@ module Lib
       if redirect_url.nil? || !valid_url?(redirect_url)
         errors.append(user_err(:auth_code_redirect_url_required))
       end
-      errors.concat validate_pkce(client, auth_params)
+      errors.concat validate_pkce(client, auth_params) unless client.nil?
+      errors
     end
 
     def generate_code(auth_params, options = {})
@@ -52,18 +53,16 @@ module Lib
 
     def validate_pkce(client, auth_params)
       errors = []
-      if !client.nil? and client.pkce
-        if auth_params.code_challenge.nil?
-          errors.append(user_err(:auth_code_challenge_required))
-        end
-        if auth_params.code_challenge_method.nil?
-          errors.append(user_err(:auth_code_challenge_method_required))
-        end
-        if !auth_params.code_challenge_method.nil? and (
-          auth_params.code_challenge_method.upcase != "SHA256" ||
-              auth_params.code_challenge_method.upcase != "PLAIN")
-          errors.append user_err(:auth_code_invalid_code_challenge_method)
-        end
+      return errors unless client.pkce
+      if auth_params.code_challenge.nil?
+        errors.append(user_err(:auth_code_challenge_required))
+      end
+      if auth_params.code_challenge_method.nil?
+        errors.append(user_err(:auth_code_challenge_method_required))
+      end
+      if !auth_params.code_challenge_method.nil? and !%w(SHA256, PLAIN).include?(
+          auth_params.code_challenge_method.upcase)
+        errors.append user_err(:auth_code_invalid_grant_error)
       end
       errors
     end
