@@ -83,40 +83,49 @@ module Tokens
       def token_validate(auth_params)
         errors = []
         code = ::AuthorizationCode.find_by_code auth_params.authorization_code
-        if code.nil?
-          errors.append(user_err(:auth_code_invalid))
-        else
-          begin
-            errors.append(user_err(:auth_code_expired)) if code.expired?
-            client_id = auth_params.client_id
-            secret = auth_params.secret
-            client = code.client
-            is_valid = (client.uid == client_id && client.secret == secret)
-            unless is_valid
-              errors.append user_err(:auth_code_invalid_client_or_secret)
-            end
-            if client.pkce
-              code_challenge = code.code_challenge
-              calculated_code_challenge = generate_code_challenge(
-                  code.code_challenge_method, auth_params.code_verifier)
-              if code_challenge != calculated_code_challenge
-                errors.append user_err(:auth_code_invalid_grant_error)
-              end
-            end
-          rescue StandardError => error
+        errors.concat code_validate(code)
+        errors.concat client_validate(code, auth_params) unless code.nil?
+        errors
+      end
+
+      def code_validate(code)
+        errors = []
+        errors.append(user_err(:auth_code_invalid)) if code.nil?
+        errors.append(user_err(:auth_code_expired)) if !code.nil? && code.expired?
+        errors
+      end
+
+      def client_validate(code, auth_params)
+        errors = []
+        begin
+          client_id = auth_params.client_id
+          secret = auth_params.secret
+          client = code.client
+          is_valid = (client.uid == client_id && client.secret == secret)
+          unless is_valid
             errors.append user_err(:auth_code_invalid_client_or_secret)
           end
+          errors.concat(pkce_validate(code, auth_params)) if client.pkce
+        rescue StandardError => error
+          errors.append user_err(:auth_code_invalid_client_or_secret)
         end
         errors
       end
 
+      def pkce_validate(code, auth_params)
+        errors = []
+        code_challenge = code.code_challenge
+        calculated_code_challenge = generate_code_challenge(
+          code.code_challenge_method, auth_params.code_verifier)
+        is_invalid = code_challenge != calculated_code_challenge
+        errors.append user_err(:auth_code_invalid_grant_error) if is_invalid
+        errors
+      end
+
       def generate_code_challenge(code_challenge_method, code_verifier)
-        code_challenge = code_verifier
-        if code_challenge_method == "SHA256"
-          digest = Digest::SHA256.hexdigest code_verifier
-          code_challenge = Base64.urlsafe_encode64 digest
-        end
-        code_challenge
+        return code_verifier if code_challenge_method == 'PLAIN'
+        digest = Digest::SHA256.hexdigest code_verifier
+        Base64.urlsafe_encode64 digest
       end
 
     end
