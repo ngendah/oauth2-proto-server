@@ -11,7 +11,7 @@ RSpec.describe Tokens::Type::AuthorizationCode, type: :oauth2 do
   end
   subject(:auth_code_token) { Tokens::Type::AuthorizationCode.new }
   let(:redirect_url) { 'http://test.com' }
-  let(:client) { create :client }
+  let(:client) { create :client, pkce: false }
   let(:grant_type) { 'authorization_code' }
 
   describe '.type_name' do
@@ -113,6 +113,26 @@ RSpec.describe Tokens::Type::AuthorizationCode, type: :oauth2 do
         )
       end
       let(:errors) { [user_err(:auth_code_invalid_client_or_secret)] }
+      subject { auth_code_token.token_validate(auth_params) }
+      it { is_expected.to match_array(errors) }
+    end
+    context 'with an invalid code verifier' do
+      let(:client) { create :client, pkce: true, secret: 'secret' }
+      let(:code_challenge) { SecureRandom.uuid }
+      let(:authorization) do
+        create(:authorization_code, client: client,
+               redirect_url: redirect_url,
+               code_challenge_method: 'SHA256',
+               code_challenge: code_challenge,
+               code: SecureRandom.uuid, expires: Time.now + 10.minutes)
+      end
+      let(:auth_params) do
+        AuthParams.new({code: authorization.code, 
+                        code_verifier: SecureRandom.uuid},
+                        'Authorization'=>"#{client.uid}:#{Base64.encode64(client.secret)}")
+
+      end
+      let(:errors) { [user_err(:auth_code_invalid_grant_error)] }
       subject { auth_code_token.token_validate(auth_params) }
       it { is_expected.to match_array(errors) }
     end
@@ -229,6 +249,15 @@ RSpec.describe Tokens::Type::AuthorizationCode, type: :oauth2 do
       it { is_expected.to eq(refresh_token.correlation_uid) }
     end
   end
+  describe '.code_validate' do
+    pending "add some examples to (or delete) #{__FILE__}"
+  end
+  describe '.client_validate' do
+    pending "add some examples to (or delete) #{__FILE__}"
+  end
+  describe '.pkce_validate' do
+    pending "add some examples to (or delete) #{__FILE__}"
+  end
   describe '.revoke_validate' do
     context 'with an invalid authentication header' do
       let(:params) do
@@ -258,6 +287,19 @@ RSpec.describe Tokens::Type::AuthorizationCode, type: :oauth2 do
       subject { auth_code_token.revoke_validate(auth_params) }
       let(:errors) { [user_err(:token_invalid)] }
       it { is_expected.to match_array(errors) }
+    end
+  end
+
+  describe '.generate_code_challenge' do
+    context 'with PLAIN code generation method' do
+      let(:code_verifier) { 'verified' }
+      subject{ auth_code_token.generate_code_challenge('PLAIN', code_verifier) }
+      it { is_expected.to eq(code_verifier) }
+    end
+    context 'with SHA256 code generation method' do
+      let(:code_verifier) { 'verified' }
+      subject { auth_code_token.generate_code_challenge('SHA256', code_verifier) }
+      it { is_expected.to_not be_nil }
     end
   end
 end
