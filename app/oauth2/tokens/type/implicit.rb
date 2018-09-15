@@ -16,6 +16,10 @@ module Tokens
       end
 
       def type_name
+        Implicit.type_name
+      end
+
+      def self.type_name
         :implicit.to_s
       end
 
