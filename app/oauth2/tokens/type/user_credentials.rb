@@ -1,5 +1,9 @@
 module Tokens
+
   module Type
+
+    # concrete class that implements all oauth2 user credentials, token request flow
+    #
     class UserCredentials < Base
 
       def token(auth_params, options = {})
@@ -17,6 +21,10 @@ module Tokens
       end
 
       def type_name
+        UserCredentials.type_name
+      end
+
+      def self.type_name
         :user_credentials.to_s
       end
 

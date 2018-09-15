@@ -6,8 +6,12 @@ module Tokens
 
   module Type
 
+    # concrete class that implements all oauth2 authorization code, token request flow
+    #
     class AuthorizationCode < Base
 
+      # service token request
+      #
       def token(auth_params, options = {})
         authorization_code = auth_params.authorization_code
         token = access_token authorization_code, options
