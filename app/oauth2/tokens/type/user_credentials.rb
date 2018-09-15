@@ -41,37 +41,11 @@ module Tokens
       protected
 
       def access_token(user_uid, options = {})
-        user = ::User.find_by_uid user_uid
-        user.delete_expired_tokens
-        token = user.token
-        if token.nil? || token.expired?
-          token = TokenGenerator.token
-          correlation_uid = options.fetch :correlation_uid, SecureRandom.uuid
-          user.access_tokens << ::AccessToken.create(
-            token: token[:access_token], expires: token[:expires_in],
-            correlation_uid: correlation_uid, grant_type: type_name)
-        else
-          token = { access_token: token.token, expires_in: token.expires }
-        end
-        token[:scope] = []
-        token_time_to_timedelta token
+        super ::User.find_by_uid(user_uid), options
       end
 
       def refresh_token(user_id, options = {})
-        user = ::User.find_by_uid user_id
-        refresh_token = user.refresh_token
-        unless refresh_token.nil? || refresh_token.invalid?
-          refresh_token.revoke
-        end
-        expires_in = options.fetch(:expires_in, 20.minutes)
-        correlation_uid = options.fetch :correlation_uid, nil
-        refresh_token = TokenGenerator.token :default, timedelta: expires_in
-        user.access_tokens << ::AccessToken.create(
-          token: refresh_token[:access_token], refresh: true,
-          expires: refresh_token[:expires_in], grant_type: type_name,
-          correlation_uid: correlation_uid
-        )
-        token_time_to_timedelta refresh_token
+        super ::User.find_by_uid(user_id), options
       end
 
       def token_validate(auth_params)
