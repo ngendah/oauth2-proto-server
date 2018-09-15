@@ -50,7 +50,6 @@ module Tokens
       end
 
       def refresh_token(authorization_code, options = {})
-        # create a refresh token
         super ::AuthorizationCode.find_by_code(authorization_code), options
       end
 
