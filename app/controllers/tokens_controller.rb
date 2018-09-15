@@ -40,21 +40,21 @@ class TokensController < ApplicationController
             error: {title: titles(:access_token_error),
                     message: user_err(:refresh_invalid_token),
                     status: :bad_request},
-            process: lambda {|g, a| g.access_token.refresh(a)}
+            process: lambda {|g, a_p| g.access_token.refresh(a_p)}
         },
         destroy: {
             grant: lambda {|a_p| Grants::Grant.from_token a_p.access_token},
             error: {title: titles(:access_token_error),
                     message: user_err(:token_invalid),
                     status: :bad_request},
-            process: lambda {|g, a| g.access_token.revoke(a)}
+            process: lambda {|g, a_p| g.access_token.revoke(a_p)}
         },
         show: {
             grant: lambda {|a_p| Grants::Grant[a_p.grant_type]},
             error: {title: titles(:access_token_error),
                     message: user_err(:grant_type_invalid),
                     status: :bad_request},
-            process: lambda {|g, a| g.access_token.token(a)}
+            process: lambda {|g, a_p| g.access_token.token(a_p)}
         }
     }[method]
   end
