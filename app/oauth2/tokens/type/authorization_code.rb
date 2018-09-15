@@ -27,6 +27,10 @@ module Tokens
       end
 
       def type_name
+        AuthorizationCode.type_name
+      end
+
+      def self.type_name
         :authorization_code.to_s
       end
 

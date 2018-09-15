@@ -2,6 +2,14 @@ module Tokens
   module Type
     class Introspect < Base
 
+      def type_name
+        Introspect.type_name
+      end
+
+      def self.type_name
+        :introspect.to_s
+      end
+
       def query(auth_params)
         introspection = super auth_params
         if introspection[:active]
