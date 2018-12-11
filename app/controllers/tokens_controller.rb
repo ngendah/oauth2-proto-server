@@ -25,6 +25,7 @@ class TokensController < ApplicationController
     server = request_servers method
     grant = server[:grant].call auth_params
     raise HttpError.new(server[:error][:title], server[:error][:message], server[:error][:status]) if grant.nil?
+
     errors = grant.access_token.is_valid auth_params
     unless errors.empty?
       raise HttpError.new(titles(:access_token_error),
@@ -36,25 +37,25 @@ class TokensController < ApplicationController
   def request_servers(method)
     {
         update: {
-            grant: lambda {|a_p| Grants::Grant.from_token a_p.refresh_token},
-            error: {title: titles(:access_token_error),
+            grant: ->(auth_params) { Grants::Grant.from_token auth_params.refresh_token },
+            error: { title: titles(:access_token_error),
                     message: user_err(:refresh_invalid_token),
-                    status: :bad_request},
-            process: lambda {|g, a_p| g.access_token.refresh(a_p)}
+                    status: :bad_request },
+            process: ->(grant, auth_params) { grant.access_token.refresh(auth_params) }
         },
         destroy: {
-            grant: lambda {|a_p| Grants::Grant.from_token a_p.access_token},
-            error: {title: titles(:access_token_error),
+            grant: ->(auth_params) { Grants::Grant.from_token auth_params.access_token },
+            error: { title: titles(:access_token_error),
                     message: user_err(:token_invalid),
-                    status: :bad_request},
-            process: lambda {|g, a_p| g.access_token.revoke(a_p)}
+                    status: :bad_request },
+            process: ->(grant, auth_params) { grant.access_token.revoke(auth_params) }
         },
         show: {
-            grant: lambda {|a_p| Grants::Grant[a_p.grant_type]},
-            error: {title: titles(:access_token_error),
+            grant: ->(auth_params) { Grants::Grant[auth_params.grant_type] },
+            error: { title: titles(:access_token_error),
                     message: user_err(:grant_type_invalid),
-                    status: :bad_request},
-            process: lambda {|g, a_p| g.access_token.token(a_p)}
+                    status: :bad_request },
+            process: ->(grant, auth_params) { grant.access_token.token(auth_params) }
         }
     }[method]
   end
