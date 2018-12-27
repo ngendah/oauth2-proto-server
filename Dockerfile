@@ -21,6 +21,7 @@ COPY . .
 
 ENV RAILS_ENV="development"
 
+RUN bundle exec rake swagger:docs
 RUN bundle exec rake db:setup
 
 ENTRYPOINT ["rails", "s"]
