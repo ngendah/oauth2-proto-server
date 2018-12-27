@@ -37,6 +37,7 @@ group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw] 
   gem 'rubocop'
   gem 'rake'
+  gem 'swagger-docs'
 end
 
 group :test do
