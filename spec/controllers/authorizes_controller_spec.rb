@@ -14,7 +14,7 @@ RSpec.describe AuthorizesController, type: :controller do
                code: SecureRandom.uuid, expires: Time.now + 10.minutes)
       end
       let(:params) do
-        { grant_type: 'authorization_code',
+        { response_type: 'code',
           client_id: authorization.client.uid }
       end
       it {
@@ -32,7 +32,7 @@ RSpec.describe AuthorizesController, type: :controller do
                code: SecureRandom.uuid, expires: Time.now + 10.minutes)
       end
       let(:params) do
-        { grant_type: 'authorization_code', redirect_url: redirect_url,
+        { response_type: 'code', redirect_url: redirect_url,
           client_id: authorization.client.uid }
       end
       it {
@@ -45,7 +45,7 @@ RSpec.describe AuthorizesController, type: :controller do
     context 'with valid client and redirect url' do
       let(:redirect_url) { 'http://mycomp.com' } 
       let(:params) do
-        { grant_type: 'authorization_code',
+        { response_type: 'code',
           redirect_url: redirect_url,
           client_id: client.uid }
       end
@@ -56,6 +56,22 @@ RSpec.describe AuthorizesController, type: :controller do
         expect(response.headers['Location']).to_not be_empty
         expect(
           URI.parse(response.headers['Location']).host).to eq parsed_url.host
+      }
+    end
+    context 'with valid client, redirect url and redirect set to false' do
+      let(:redirect_url) { 'http://mycomp.com' }
+      let(:params) do
+        { response_type: 'code',
+          redirect: false,
+          redirect_url: redirect_url,
+          client_id: client.uid }
+      end
+      let(:parsed_url) { URI.parse(redirect_url) }
+      it {
+        get :show, params: params
+        expect(response).to have_http_status(:found)
+        expect(response.body).to_not be_empty
+        expect(URI.parse(JSON.parse(response.body)['location']).host).to eq parsed_url.host
       }
     end
   end
