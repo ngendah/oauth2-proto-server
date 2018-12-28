@@ -17,12 +17,12 @@ paths:
       parameters:
         - name: client_id
           in: query
-          description: Client id of a registered user or client e.g an api
+          description: A registered client id
           required: true
           type: string
-        - name: request_type
+        - name: response_type
           in: query
-          description: Grant type requested, the only available option is <code>code</code>
+          description: Request for the authorization code flow
           required: true
           type: string
         - name: redirect_url
@@ -31,12 +31,12 @@ paths:
           type: string
         - name: redirect
           in: query
-          description: A boolean param to indicate to the server whether a redirect, status code 302, is required
+          description: Indicate to the server whether a redirect, status code 302, is required.
           type: string
-          default: true
+          value: false
         - name: state
           in: query
-          description: A client random generated token to prevent CSRF
+          description: A client generated random token to prevent CSRF
           type: string
       security:
           - apikey: []
@@ -56,7 +56,9 @@ definitions:
     properties:
       title:
         type: string
-      message:
-        type: string
-      links:
+      description:
+        type: array
+        items:
+          type: string
+      link:
         type: string
