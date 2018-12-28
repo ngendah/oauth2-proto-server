@@ -1,56 +1,80 @@
-swagger: "2.0"
+openapi: "3.0.0"
 info:
   title: OAuth2 API Server
-  description: OAuth 2 API Server
-  version: "1.0.0"
-host: "localhost:3000"
-basePath: "/"
-schemes:
-  - http
-consumes:
-  - application/json
+  description: OAuth2 API Server
+  version: "0.0.1"
+servers:
+  - url: http://localhost:3000
 paths:
   /authorize:
     get:
-      summary: Authorization Code Grant Type
+      summary: Authorization code request
       description: Issues an authorization code to valid clients
+      tags:
+        - Authorization Code Grant Type
       parameters:
         - name: client_id
           in: query
           description: A registered client id
           required: true
-          type: string
+          schema:
+            type: string
+          example: "c2ce91a6-98b6-4d4b-99ad-eeb174c0b6d5"
         - name: response_type
           in: query
           description: Request for the authorization code flow
           required: true
-          type: string
+          schema:
+            type: string
+          example: "code"
         - name: redirect_url
           in: query
-          description: A redirect url to redirect the client. A Redirect url should be registered with the server
-          type: string
+          description: A redirect url to redirect the client. Redirect url's should be registered with the server
+          schema:
+            type: string
         - name: redirect
           in: query
-          description: Indicate to the server whether a redirect, status code 302, is required.
-          type: string
-          value: false
+          description: Indicate to the server whether a redirect, status code 302, is required
+          schema:
+            type: string
+          example: "false"
         - name: state
           in: query
           description: A client generated random token to prevent CSRF
-          type: string
-      security:
-          - apikey: []
-      tags:
-          - Authorize
-      responses:
-        "302":
-          description: Found
-        "404":
-          description: Not Found
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/Error'
+            type: string
+      responses:
+        '302':
+          description: Found
+          headers:
+            Location:
+              description: Redirect url. Only if redirect param is set as true
+              schema:
+                type: string
+          content:
+            application/json:
+              description: Content is only present if redirect param has been set as false
+              schema:
+                required:
+                  - location
+                properties:
+                  location:
+                    type: string
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/definitions/Error'
+        default:
+          description: The client is redirected
+          headers:
+            Location:
+              description: Redirect url
+              schema:
+                type: string
 definitions:
   Error:
     properties:
