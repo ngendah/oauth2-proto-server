@@ -120,6 +120,10 @@ class AuthParams
     @params[:code_verifier]
   end
 
+  def state
+    @params[:state]
+  end
+
   protected
 
   def map_grant_type(grant)
