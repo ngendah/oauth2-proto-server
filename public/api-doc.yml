@@ -20,14 +20,23 @@ paths:
           description: Client id of a registered user or client e.g an api
           required: true
           type: string
-        - name: grant_type
+        - name: request_type
           in: query
-          description: Grant type requested, the only available option is authorization_code
+          description: Grant type requested, the only available option is <code>code</code>
           required: true
           type: string
         - name: redirect_url
           in: query
-          description: The redirect url, to be set on the response. The redirect url must be have been registered with the server
+          description: A redirect url to redirect the client. A Redirect url should be registered with the server
+          type: string
+        - name: redirect
+          in: query
+          description: A boolean param to indicate to the server whether a redirect, status code 302, is required
+          type: string
+          default: true
+        - name: state
+          in: query
+          description: A client random generated token to prevent CSRF
           type: string
       security:
           - apikey: []

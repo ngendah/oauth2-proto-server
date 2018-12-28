@@ -33,6 +33,10 @@ class AuthParams
     @params[:grant_type]
   end
 
+  def response_type
+    map_grant_type @params[:response_type]
+  end
+
   def client_id
     basic_auth = @headers['Authorization']
     unless basic_auth.nil?
@@ -80,6 +84,10 @@ class AuthParams
     redirect_url
   end
 
+  def redirect?
+    !@params[:redirect]
+  end
+
   def refresh_token_key_exists?
     @params.key?(:refresh_token)
   end
@@ -110,5 +118,15 @@ class AuthParams
 
   def code_verifier
     @params[:code_verifier]
+  end
+
+  def state
+    @params[:state]
+  end
+
+  protected
+
+  def map_grant_type(grant)
+    { 'code' => 'authorization_code' }.fetch(grant, grant)
   end
 end
