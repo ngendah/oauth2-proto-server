@@ -1,48 +1,53 @@
 swagger: "2.0"
 info:
-  title: OAuth2 API
-  description: OAuth 2 Server
+  title: OAuth2 API Server
+  description: OAuth 2 API Server
   version: "1.0.0"
-host:
+host: "localhost:3000"
+basePath: "/"
 schemes:
   - http
-basePath: /
-produces:
+consumes:
   - application/json
 paths:
   /authorize:
     get:
-    summary: Authorization Code Grant Type
-    description: Issues an authorization code to valid clients
-    parameters:
-      - name: client_id
-        in: query
-        description: Client id of a registered user or client e.g an api
-        required: true
+      summary: Authorization Code Grant Type
+      description: Issues an authorization code to valid clients
+      parameters:
+        - name: client_id
+          in: query
+          description: Client id of a registered user or client e.g an api
+          required: true
+          type: string
+        - name: grant_type
+          in: query
+          description: Grant type requested, the only available option is authorization_code
+          required: true
+          type: string
+        - name: redirect_url
+          in: query
+          description: The redirect url, to be set on the response. The redirect url must be have been registered with the server
+          type: string
+      security:
+          - apikey: []
+      tags:
+          - Authorize
+      responses:
+        "302":
+          description: Found
+        "404":
+          description: Not Found
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Error'
+definitions:
+  Error:
+    properties:
+      title:
         type: string
-      - name: grant_type
-        in: query
-        description: Grant type requested, the only available option is authorization_code
-        required: true
+      message:
         type: string
-      - name: redirect_url
-        in: query
-        description: The redirect url, to be set on the response. The redirect url must be have been registered with the server
-        required: false,
+      links:
         type: string
-    responses:
-      "302":
-        description: Found
-      "404":
-        description: Bad request
-        schema:
-          type: array
-          $ref: '#/definitions/Error'
-Error:
-  properties:
-    title:
-      type: string
-    message:
-      type: string
-    links:
-      type: string
