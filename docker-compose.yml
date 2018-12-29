@@ -9,6 +9,6 @@ services:
     links:
       - api
     environment:
-      - API_URL=http://localhost:3000/api-doc.yml
+      - API_URL=http://localhost:3000/
     ports:
       - "8080:8080"
