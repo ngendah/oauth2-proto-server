@@ -42,17 +42,17 @@ There 2 ways:
 Seed values for the development server are available [here](./db/seeds.rb)
 
 ## API Reference
-* [Authorization code grant](./docs/authorization-code.md)
+* [Authorization code grant](./docs/readme/authorization-code.md)
 
-* [User credentials grant](./docs/user-credentials.md)
+* [User credentials grant](./docs/readme/user-credentials.md)
 
-* [Implicit grant](./docs/implicit-grant.md)
+* [Implicit grant](./docs/readme/implicit-grant.md)
 
-* [Refresh access token](./docs/refresh-access-token.md)
+* [Refresh access token](./docs/readme/refresh-access-token.md)
 
-* [Revoke token](./docs/revoke-token.md)
+* [Revoke token](./docs/readme/revoke-token.md)
 
-* [Token introspection](./docs/check-token.md)
+* [Token introspection](./docs/readme/check-token.md)
 
 ## OAuth 2.0 Reference
 [Framework](https://tools.ietf.org/html/rfc6749)
