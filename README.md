@@ -13,46 +13,30 @@ It implements the following grants:
 * implicit
 
 ### Getting Started
-There 2 ways:
+OAuth2 server uses [swagger-ui](https://github.com/swagger-api/swagger-ui) to generate its documentation 
+and make it easier to get started and the only dependency required is [docker-compose](https://docs.docker.com/compose/).
 
-1. With a locally installed ruby on rails
-    * Clone the project.
-    * Install dependencies by executing the command,
-        ```
-        $ bundle install
-        ```
-     * Setup the server,
-        ```
-        $ rails db:setup
-        ```
-     * Run the server,
-        ```
-        $ rails s
-        ```
-2. With [docker](www.docker.com)
-    * Build the image,
-        ```
-        $ docker build -t oauth-server:0.1 .
-        ```
-    * Run the image,
-        ```
-        $ docker run -p 3000:3000 oauth-server:0.1
-        ```
+1. Build and run the app,
+   ```
+    $ docker-compose up
+   ```
+2. On your browser navigate to `localhost:8080` to access `swagger-ui`.
+![Alt Text](./docs/pics/oauth2-server.png)
+3. This is work in progress.
 
 Seed values for the development server are available [here](./db/seeds.rb)
 
 ## API Reference
-* [Authorization code grant](./docs/authorization-code.md)
 
-* [User credentials grant](./docs/user-credentials.md)
+* [User credentials grant](./docs/readme/user-credentials.md)
 
-* [Implicit grant](./docs/implicit-grant.md)
+* [Implicit grant](./docs/readme/implicit-grant.md)
 
-* [Refresh access token](./docs/refresh-access-token.md)
+* [Refresh access token](./docs/readme/refresh-access-token.md)
 
-* [Revoke token](./docs/revoke-token.md)
+* [Revoke token](./docs/readme/revoke-token.md)
 
-* [Token introspection](./docs/check-token.md)
+* [Token introspection](./docs/readme/check-token.md)
 
 ## OAuth 2.0 Reference
 [Framework](https://tools.ietf.org/html/rfc6749)

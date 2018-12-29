@@ -8,7 +8,9 @@ module Authorities
 
     def code(auth_params, options = {})
       auth_code = generate_code(auth_params, options)
-      "#{auth_code[:redirect_url]}?code=#{auth_code[:code]}"
+      response = "#{auth_code[:redirect_url]}?code=#{auth_code[:code]}"
+      response += "&state=#{auth_params.state}" if auth_params.state
+      response
     end
   end
 end
