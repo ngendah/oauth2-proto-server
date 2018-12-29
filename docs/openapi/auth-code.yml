@@ -1,4 +1,4 @@
-openapi: "3.0.3"
+openapi: "3.0.0"
 info:
   title: OAuth2 API Server
   description: OAuth2 API Server
@@ -84,7 +84,7 @@ paths:
     get:
       summary: Authorization code, token request
       description: >-
-        Issues an auth token to valid authorization codes.
+        Issues an access tokens to valid authorization codes.
         An example bearer token: c2ce91a6-98b6-4d4b-99ad-eeb174c0b6d5:c2VjcmV0
       tags:
         - Authorization Code Grant Type
