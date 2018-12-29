@@ -1,0 +1,87 @@
+openapi: "3.0.0"
+info:
+  title: OAuth2 API Server
+  description: OAuth2 API Server
+  version: "0.0.1"
+servers:
+  - url: http://localhost:3000
+paths:
+  /token:
+    get:
+      summary: User credentials token request
+      description: Issues an access token to a registered user.
+      tags:
+        - User Credentials Grant Type
+      parameters:
+        - name: grant_type
+          in: query
+          description: The grant type token required
+          required: true
+          schema:
+            type: string
+          example: "user_credentials"
+        - name: client_id
+          in: query
+          required: true
+          description: A valid client id
+          schema:
+            type: string
+          example: "c2ce91a6-98b6-4d4b-99ad-eeb174c0b6d5"
+        - name: user_uid
+          in: query
+          required: true
+          description: A unique user identifier
+          schema:
+            type: string
+          example: "9c965d6d-ec9d-45de-9708-13f3f62d7c4d"
+        - name: password
+          in: query
+          required: true
+          description: User password
+          schema:
+            type: string
+          example: "password"
+        - name: refresh
+          in: query
+          required: false
+          description: Specify if a refresh token is required, default is false
+          schema:
+            type: string
+          example: "true"
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/definitions/Token'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/definitions/Error'
+definitions:
+  Token:
+    properties:
+      access_token:
+         type: string
+      expires_in:
+        type: integer
+        format: int64
+      scope:
+        type: string
+      refresh_token:
+        type: string
+  Error:
+    properties:
+      title:
+        type: string
+      description:
+        type: array
+        items:
+          type: string
+      link:
+        type: string
