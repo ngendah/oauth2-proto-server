@@ -38,24 +38,11 @@ class AuthParams
   end
 
   def client_id
-    basic_auth = @headers['Authorization']
-    unless basic_auth.nil?
-      client_secret = basic_auth.split(':')
-      unless client_secret.length.positive?
-        raise StandardError, internal_err(:bad_auth_header)
-      end
-      return client_secret[0]
-    end
-    @params[:client_id]
+    @headers['Authorization'].nil? ? @params[:client_id] : client_secret[:client_id]
   end
 
   def secret
-    basic_auth = @headers['Authorization']
-    client_secret = basic_auth.split(':')
-    unless client_secret.length.positive?
-      raise StandardError, internal_err(:bad_auth_header)
-    end
-    Base64.decode64 client_secret[1]
+    Base64.decode64 client_secret[:secret]
   end
 
   def user_uid_password
@@ -93,15 +80,15 @@ class AuthParams
   end
 
   def bearer_token
-    bearer = @headers['Authorization']
-    if bearer.nil? || bearer.split(' ').length == 1
+    finder = /(Bearer +)(.+)/
+    bearer = finder.match(@headers['Authorization'])
+    if bearer.length < 3
       raise StandardError, internal_err(:bad_auth_header)
     end
-    type, token = bearer.split(' ')
-    unless type == 'Bearer'
+    unless bearer[1].strip == 'Bearer'
       raise StandardError, internal_err(:bad_auth_method_expect_bearer)
     end
-    token
+    bearer[2]
   end
 
   def access_token
@@ -125,6 +112,15 @@ class AuthParams
   end
 
   protected
+
+  def client_secret
+    finder = /([Bb]earer +)?([\w-]+):(.+)/
+    client_and_secret = finder.match(@headers['Authorization'])
+    if client_and_secret.length < 4
+      raise StandardError, internal_err(:bad_auth_header)
+    end
+    { client_id: client_and_secret[2], secret: client_and_secret[3] }
+  end
 
   def map_grant_type(grant)
     { 'code' => 'authorization_code' }.fetch(grant, grant)
