@@ -9,12 +9,6 @@ info:
     * User credentials grant: http://localhost:3000/?docs=user-cred
 
     * Implicit grant: http://localhost:3000/?docs=implicit
-
-    * Refresh token: http://localhost:3000/?docs=refresh-token
-
-    * Revoke token: http://localhost:3000/?docs=revoke-token
-
-    * Token introspection: http://localhost:3000/?docs=inspect
   version: "0.0.1"
 servers:
   - url: http://localhost:3000
