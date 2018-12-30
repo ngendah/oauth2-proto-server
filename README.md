@@ -14,7 +14,7 @@ It implements the following grants:
 
 ### Getting Started
 OAuth2 server uses [swagger-ui](https://github.com/swagger-api/swagger-ui) to generate its documentation 
-and make it easier to get started and the only dependency required is [docker-compose](https://docs.docker.com/compose/).
+and make it easier to get started. The only dependency required is [docker-compose](https://docs.docker.com/compose/).
 
 1. Build and run the app,
    ```
