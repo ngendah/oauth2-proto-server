@@ -130,6 +130,35 @@ paths:
                 type: array
                 items:
                   $ref: '#/definitions/Error'
+    delete:
+      summary: Revoke tokens
+      description: Revoke issued tokens
+      tags:
+        - Authorization Code Grant Type
+      security:
+        - tokenAuth: []
+      parameters:
+        - name: token
+          in: query
+          description: Token we want to revoke
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/definitions/Inspection'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/definitions/Error'
   /check:
      get:
       summary: Inspect tokens
