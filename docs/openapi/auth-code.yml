@@ -1,7 +1,7 @@
 openapi: "3.0.0"
 info:
   title: OAuth2 API Server
-  description: OAuth2 API Server
+  description: OAuth2 API Server, other docs available at user-cred and implicit
   version: "0.0.1"
 servers:
   - url: http://localhost:3000
@@ -122,6 +122,39 @@ paths:
             application/json:
               schema:
                 $ref: '#/definitions/Token'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/definitions/Error'
+    put:
+      summary: Issue a new token
+      description: Issue a new token, using a refresh token
+      tags:
+        - Authorization Code Grant Type
+      parameters:
+        - name: refresh_token
+          in: query
+          description: Refresh token to be used to issue a new token
+          required: true
+          schema:
+            type: string
+        - name: refresh
+          in: query
+          required: false
+          description: Specify if a refresh token is required
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/definitions/Inspection'
         '400':
           description: Bad request
           content:

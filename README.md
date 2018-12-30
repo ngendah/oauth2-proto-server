@@ -22,21 +22,9 @@ and make it easier to get started and the only dependency required is [docker-co
    ```
 2. On your browser navigate to `localhost:8080` to access `swagger-ui`.
 ![Alt Text](./docs/pics/oauth2-server.png)
-3. This is work in progress.
+3. Reference documents are available at `docs/auth-code`, `docs/user-cred` and `docs/implicit`.
 
 Seed values for the development server are available [here](./db/seeds.rb)
-
-## API Reference
-
-* [User credentials grant](./docs/readme/user-credentials.md)
-
-* [Implicit grant](./docs/readme/implicit-grant.md)
-
-* [Refresh access token](./docs/readme/refresh-access-token.md)
-
-* [Revoke token](./docs/readme/revoke-token.md)
-
-* [Token introspection](./docs/readme/check-token.md)
 
 ## OAuth 2.0 Reference
 [Framework](https://tools.ietf.org/html/rfc6749)
