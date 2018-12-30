@@ -80,7 +80,7 @@ class AuthParams
   end
 
   def bearer_token
-    finder = /(Bearer +)(.{1,60})/
+    finder = /(Bearer +)(.{1,120})/
     bearer = finder.match(@headers['Authorization'])
     if bearer.length < 3
       raise StandardError, internal_err(:bad_auth_header)
@@ -114,7 +114,7 @@ class AuthParams
   protected
 
   def client_secret
-    finder = /([Bb]earer +)?([\w-]+):(.{1,60})/
+    finder = /([Bb]earer +)?([\w-]+):(.{1,120})/
     client_and_secret = finder.match(@headers['Authorization'])
     if client_and_secret.length < 4
       raise StandardError, internal_err(:bad_auth_header)
