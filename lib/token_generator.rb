@@ -17,7 +17,7 @@ class TokenGenerator
 
   def self.default_token_generator(opts)
     {
-      access_token: SecureRandom.urlsafe_base64(opts.fetch(:length, 100)),
+      access_token: SecureRandom.urlsafe_base64(opts.fetch(:length, 60)),
       expires_in: Time.now + opts.fetch(:timedelta, 10.minutes)
     }
   end

@@ -14,21 +14,29 @@ RSpec.describe Tokens::Type::Base, type: :oauth2 do
   describe '.query' do
     context 'with a valid access token' do
       let(:grant_type) { 'authorization_code' }
+      let(:expires) { Time.now + 4.minutes }
       let(:access_token) do
         create :access_token, token: SecureRandom.uuid,
-               expires: (Time.now + 10.minutes),
-               refresh: false, grant_type: grant_type
+                              expires: expires,
+                              refresh: false, grant_type: grant_type
       end
       let(:auth_params) do
         AuthParams.new({ token: access_token.token }, {})
       end
-      subject { base.query(auth_params) }
+      subject(:token) { base.query(auth_params) }
       it { is_expected.to_not be_empty }
       it { is_expected.to have_key(:token_type) }
       it { is_expected.to have_key(:grant_type) }
       it { is_expected.to have_key(:expires_in) }
       it { is_expected.to have_key(:active) }
       it { is_expected.to have_key(:scope) }
+      it 'is still active' do
+        expect(token[:active]).to be_truthy
+      end
+      it 'has expires within 4 minutes' do
+        time_delta = expires.tv_sec - Time.now.tv_sec
+        expect(token[:expires_in]).to be_within(1).of(time_delta)
+      end
     end
   end
 end
