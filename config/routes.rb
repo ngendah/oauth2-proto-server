@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
-  root to: 'home#index'
   resource :authorize
   resource :token
   resource :check
+  match 'docs/:doc', to: 'home#index', via: :get, as: :docs
+  root 'home#index'
 end

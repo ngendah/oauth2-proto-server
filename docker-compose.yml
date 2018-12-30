@@ -9,6 +9,6 @@ services:
     links:
       - api
     environment:
-      - API_URL=http://localhost:3000/?docs=auth-code
+      - API_URL=http://localhost:3000/docs/auth-code
     ports:
       - "8080:8080"
