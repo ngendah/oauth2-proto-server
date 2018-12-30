@@ -1,9 +1,7 @@
 openapi: "3.0.0"
 info:
   title: OAuth2 API Server
-  description: >-
-    OAuth2 API Server <br/>
-    Other docs available are, user-cred and implicit
+  description: OAuth2 API Server, other docs available at user-cred and implicit
   version: "0.0.1"
 servers:
   - url: http://localhost:3000

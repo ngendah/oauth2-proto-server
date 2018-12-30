@@ -1,10 +1,18 @@
 openapi: "3.0.0"
 info:
   title: OAuth2 API Server
-  description: OAuth2 API Server
+  description: OAuth2 API Server, other docs are available at auth-code and implicit
   version: "0.0.1"
 servers:
   - url: http://localhost:3000
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+    tokenAuth:
+      type: http
+      scheme: bearer
 paths:
   /token:
     get:
@@ -63,6 +71,98 @@ paths:
                 type: array
                 items:
                   $ref: '#/definitions/Error'
+    put:
+      summary: Issue a new token
+      description: Issue a new token, using a refresh token
+      tags:
+        - User Credentials Grant Type
+      parameters:
+        - name: refresh_token
+          in: query
+          description: Refresh token to be used to issue a new token
+          required: true
+          schema:
+            type: string
+        - name: refresh
+          in: query
+          required: false
+          description: Specify if a refresh token is required
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/definitions/Inspection'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/definitions/Error'
+    delete:
+      summary: Revoke tokens
+      description: Revoke issued tokens
+      tags:
+        - User Credentials Grant Type
+      security:
+        - tokenAuth: []
+      parameters:
+        - name: token
+          in: query
+          description: Token we want to revoke
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/definitions/Inspection'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/definitions/Error'
+  /check:
+     get:
+      summary: Inspect tokens
+      description: Inspects a token details
+      tags:
+        - User Credentials Grant Type
+      security:
+        - tokenAuth: []
+      parameters:
+        - name: token
+          in: query
+          description: Token which we want to inspect
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/definitions/Inspection'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/definitions/Error'
 definitions:
   Token:
     properties:
@@ -74,6 +174,25 @@ definitions:
       scope:
         type: string
       refresh_token:
+        type: string
+  Inspection:
+    properties:
+      active:
+        type: boolean
+      expires_in:
+        type: integer
+        format: int64
+      grant_type:
+        type: string
+      scope:
+        type: array
+        items:
+          type: string
+      token_type:
+        type: string
+      client_id:
+        type: string
+      user_uid:
         type: string
   Error:
     properties:
