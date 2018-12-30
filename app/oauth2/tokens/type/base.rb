@@ -40,7 +40,7 @@ module Tokens
       def query(auth_params)
         access_token = ::AccessToken.find_by_token auth_params.access_token
         introspection = { active: false }
-        unless access_token.nil? || access_token.expired?
+        unless access_token.nil? || access_token.invalid?
           introspection = {
             expires_in: access_token.expires,
             active: !access_token.expired?,
@@ -93,7 +93,7 @@ module Tokens
         errors = []
         begin
           bearer_token = ::AccessToken.find_by_token auth_params.bearer_token
-          if bearer_token.nil? || bearer_token.expired?
+          if bearer_token.nil? || bearer_token.invalid?
             errors.append user_err(:bearer_token_invalid)
           elsif bearer_token.refresh
             errors.append user_err(:bearer_token_is_refresh)
@@ -122,7 +122,7 @@ module Tokens
       def access_token(model_object, options)
         model_object.delete_expired_tokens
         token = model_object.token
-        if token.nil? || token.expired?
+        if token.nil? || token.invalid?
           token = TokenGenerator.token
           correlation_uid = options.fetch :correlation_uid, SecureRandom.uuid
           model_object.access_tokens << ::AccessToken.create(
