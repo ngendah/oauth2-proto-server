@@ -1,0 +1,14 @@
+openapi: "3.0.3"
+info:
+  title: OAuth2 API Server
+  description: >-
+    ## API server documentation are available at:
+
+    * Authorization code grant: http://localhost:3000/?docs=auth-code
+
+    * User credentials grant: http://localhost:3000/?docs=user-cred
+
+    * Implicit grant: http://localhost:3000/?docs=implicit
+  version: "0.0.1"
+servers:
+  - url: http://localhost:3000

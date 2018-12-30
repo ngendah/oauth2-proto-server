@@ -1,0 +1,78 @@
+openapi: "3.0.0"
+info:
+  title: OAuth2 API Server
+  description: OAuth2 API Server
+  version: "0.0.1"
+servers:
+  - url: http://localhost:3000
+paths:
+  /token:
+    get:
+      summary: Implicit token request
+      description: Issues an access token to a registered client.
+      tags:
+        - Implicit Grant Type
+      parameters:
+        - name: grant_type
+          in: query
+          description: The grant type token required
+          required: true
+          schema:
+            type: string
+          example: "implicit"
+        - name: client_id
+          in: query
+          required: true
+          description: A valid client id
+          schema:
+            type: string
+          example: "c2ce91a6-98b6-4d4b-99ad-eeb174c0b6d5"
+        - name: redirect_url
+          in: query
+          description: A redirect url to redirect the client. Redirect url's should be registered with the server
+          schema:
+            type: string
+        - name: refresh
+          in: query
+          required: false
+          description: Specify if a refresh token is required, default is false
+          schema:
+            type: string
+          example: "true"
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/definitions/Token'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/definitions/Error'
+definitions:
+  Token:
+    properties:
+      access_token:
+         type: string
+      expires_in:
+        type: integer
+        format: int64
+      scope:
+        type: string
+      refresh_token:
+        type: string
+  Error:
+    properties:
+      title:
+        type: string
+      description:
+        type: array
+        items:
+          type: string
+      link:
+        type: string

@@ -1,4 +1,4 @@
-openapi: "3.0.3"
+openapi: "3.0.0"
 info:
   title: OAuth2 API Server
   description: OAuth2 API Server
@@ -8,6 +8,9 @@ servers:
 components:
   securitySchemes:
     bearerAuth:
+      type: http
+      scheme: bearer
+    tokenAuth:
       type: http
       scheme: bearer
 paths:
@@ -84,7 +87,7 @@ paths:
     get:
       summary: Authorization code, token request
       description: >-
-        Issues an auth token to valid authorization codes.
+        Issues an access tokens to valid authorization codes.
         An example bearer token: c2ce91a6-98b6-4d4b-99ad-eeb174c0b6d5:c2VjcmV0
       tags:
         - Authorization Code Grant Type
@@ -127,6 +130,65 @@ paths:
                 type: array
                 items:
                   $ref: '#/definitions/Error'
+    delete:
+      summary: Revoke tokens
+      description: Revoke issued tokens
+      tags:
+        - Authorization Code Grant Type
+      security:
+        - tokenAuth: []
+      parameters:
+        - name: token
+          in: query
+          description: Token we want to revoke
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/definitions/Inspection'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/definitions/Error'
+  /check:
+     get:
+      summary: Inspect tokens
+      description: Inspects a token details
+      tags:
+        - Authorization Code Grant Type
+      security:
+        - tokenAuth: []
+      parameters:
+        - name: token
+          in: query
+          description: Token which we want to inspect
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/definitions/Inspection'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/definitions/Error'
 definitions:
   Token:
     properties:
@@ -138,6 +200,25 @@ definitions:
       scope:
         type: string
       refresh_token:
+        type: string
+  Inspection:
+    properties:
+      active:
+        type: boolean
+      expires_in:
+        type: integer
+        format: int64
+      grant_type:
+        type: string
+      scope:
+        type: array
+        items:
+          type: string
+      token_type:
+        type: string
+      client_id:
+        type: string
+      user_uid:
         type: string
   Error:
     properties:

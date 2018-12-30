@@ -36,27 +36,27 @@ class TokensController < ApplicationController
 
   def request_servers(method)
     {
-        update: {
-            grant: ->(auth_params) { Grants::Grant.from_token auth_params.refresh_token },
-            error: { title: titles(:access_token_error),
-                    message: user_err(:refresh_invalid_token),
-                    status: :bad_request },
-            process: ->(grant, auth_params) { grant.access_token.refresh(auth_params) }
-        },
-        destroy: {
-            grant: ->(auth_params) { Grants::Grant.from_token auth_params.access_token },
-            error: { title: titles(:access_token_error),
-                    message: user_err(:token_invalid),
-                    status: :bad_request },
-            process: ->(grant, auth_params) { grant.access_token.revoke(auth_params) }
-        },
-        show: {
-            grant: ->(auth_params) { Grants::Grant[auth_params.grant_type] },
-            error: { title: titles(:access_token_error),
-                    message: user_err(:grant_type_invalid),
-                    status: :bad_request },
-            process: ->(grant, auth_params) { grant.access_token.token(auth_params) }
-        }
+      update: {
+        grant: ->(auth_params) { Grants::Grant.from_token auth_params.refresh_token },
+        error: { title: titles(:access_token_error),
+                 message: user_err(:refresh_invalid_token),
+                 status: :bad_request },
+        process: ->(grant, auth_params) { grant.access_token.refresh(auth_params) }
+      },
+      destroy: {
+        grant: ->(auth_params) { Grants::Grant.from_token auth_params.access_token },
+        error: { title: titles(:access_token_error),
+                 message: user_err(:token_invalid),
+                 status: :bad_request },
+        process: ->(grant, auth_params) { grant.access_token.revoke(auth_params) }
+      },
+      show: {
+        grant: ->(auth_params) { Grants::Grant[auth_params.grant_type] },
+        error: { title: titles(:access_token_error),
+                 message: user_err(:grant_type_invalid),
+                 status: :bad_request },
+        process: ->(grant, auth_params) { grant.access_token.token(auth_params) }
+      }
     }[method]
   end
 end
