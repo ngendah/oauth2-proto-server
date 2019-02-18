@@ -4,7 +4,7 @@ info:
   description: OAuth2 API Server, other docs are available at auth-code and implicit
   version: "0.0.1"
 servers:
-  - url: http://localhost:3000
+  - url: http://localhost:8080/api
 components:
   securitySchemes:
     bearerAuth:
