@@ -1,0 +1,25 @@
+version: "3"
+services:
+  api.o2:
+    build:
+      context: ..
+      args:
+        RAILS_ENV: development
+    environment:
+      - RAILS_ENV=development
+  docs.api.o2:
+    image: swaggerapi/swagger-ui
+    depends_on:
+      - api.o2
+    environment:
+      - API_URL=http://localhost:8080/docs/auth-code
+  dev.api.o2:
+    build:
+      context: ./nginx/dev
+    command: [nginx-debug, '-g', 'daemon off;']
+    ports:
+      - "8080:80"
+    environment:
+      - NGINX_HOST=o2api
+    depends_on:
+      - docs.api.o2
