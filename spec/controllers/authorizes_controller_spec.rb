@@ -72,7 +72,7 @@ RSpec.describe AuthorizesController, type: :controller do
       let(:parsed_url) { URI.parse(redirect_url) }
       it {
         get :show, params: params
-        expect(response).to have_http_status(:found)
+        expect(response).to have_http_status(:ok)
         expect(response.body).to_not be_empty
         expect(URI.parse(JSON.parse(response.body)['location']).host).to eq parsed_url.host
       }
@@ -109,7 +109,7 @@ RSpec.describe AuthorizesController, type: :controller do
       end
       it {
         get :show, params: params
-        expect(response).to have_http_status(:found)
+        expect(response).to have_http_status(:ok)
         expect(response.body).to_not be_empty
         expect(URI.parse(JSON.parse(response.body)['location']).host).to eq parsed_url.host
         finder = /state=(.+)/
