@@ -1,0 +1,33 @@
+version: "3"
+services:
+  api.o2:
+    build:
+      context: ..
+      args:
+        RAILS_ENV: production
+    environment:
+      - RAILS_ENV='production'
+      - POSTGRES_DATABASE_URI=db.prod.o2api
+      - POSTGRES_USERNAME=prod-o2api
+      - POSTGRES_PASSWORD="${POSTGRES_PASSWORD}"
+    depends_on:
+      - db.api.o2
+  db.api.o2:
+    image: postgres:alpine
+    restart: always
+    volumes:
+      - "./pgdata:/var/lib/postgresql/data/pgdata"
+    environment:
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+      POSTGRES_USER: prod-o2api
+      PGDATA: /var/lib/postgresql/data/pgdata
+  prod.api.o2:
+    build:
+      context: ./nginx/prod
+    restart: always
+    ports:
+      - "80:80"
+    environment:
+      - NGINX_HOST=o2api
+    depends_on:
+      - api.o2
