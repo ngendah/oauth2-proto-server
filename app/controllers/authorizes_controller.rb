@@ -14,7 +14,7 @@ class AuthorizesController < ApplicationController
 
     unless auth_params.redirect?
       render(json: { location: grant.authorize.code(auth_params) },
-             status: :found) && return
+             status: :ok) && return
     end
     render json: {}, status: :found, location: grant.authorize.code(auth_params)
   rescue HttpError => error

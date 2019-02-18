@@ -52,16 +52,32 @@ paths:
           schema:
             type: string
       responses:
-        '302':
-          description: Found
+        '200':
+          description: Ok
           headers:
             Location:
-              description: Redirect url. Only if redirect param is set as true
+              description: Redirect url the client will be sent to complete the authorization process
               schema:
                 type: string
           content:
             application/json:
-              description: Content is only present if redirect param has been set as false
+              description: Content is present because the redirect param has been set as false
+              schema:
+                required:
+                  - location
+                properties:
+                  location:
+                    type: string
+        '302':
+          description: Found
+          headers:
+            Location:
+              description: Redirect url
+              schema:
+                type: string
+          content:
+            application/json:
+              description: Redirected to the specified redirect url
               schema:
                 required:
                   - location
