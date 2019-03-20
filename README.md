@@ -1,7 +1,7 @@
-[![Build Status](https://travis-ci.org/ngendah/oauth2-proto-server.svg?branch=master)](https://travis-ci.org/ngendah/bawabu)
-[![Maintainability](https://api.codeclimate.com/v1/badges/6600fbcd63dc5bdd2809/maintainability)](https://codeclimate.com/github/ngendah/bawabu/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/6600fbcd63dc5bdd2809/test_coverage)](https://codeclimate.com/github/ngendah/bawabu/test_coverage)
-[![security](https://hakiri.io/github/ngendah/oauth2-proto-server/master.svg)](https://hakiri.io/github/ngendah/bawabu/master)
+[![Build Status](https://travis-ci.org/ngendah/bawabu.svg?branch=master)](https://travis-ci.org/ngendah/bawabu)
+[![Maintainability](https://api.codeclimate.com/v1/badges/51b98d08a31b6234e6d0/maintainability)](https://codeclimate.com/github/ngendah/bawabu/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/51b98d08a31b6234e6d0/test_coverage)](https://codeclimate.com/github/ngendah/bawabu/test_coverage)
+[![security](https://hakiri.io/github/ngendah/bawabu/master.svg)](https://hakiri.io/github/ngendah/bawabu/master)
 
 Bawabu 
 =======================
