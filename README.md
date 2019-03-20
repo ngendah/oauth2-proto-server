@@ -3,7 +3,7 @@
 [![Test Coverage](https://api.codeclimate.com/v1/badges/6600fbcd63dc5bdd2809/test_coverage)](https://codeclimate.com/github/ngendah/oauth2-proto-server/test_coverage)
 [![security](https://hakiri.io/github/ngendah/oauth2-proto-server/master.svg)](https://hakiri.io/github/ngendah/oauth2-proto-server/master)
 
-OAuth 2 protocol server 
+Bawabu 
 =======================
 A modular and extensible OAuth2 server.
 
@@ -13,15 +13,11 @@ It implements the following grants:
 * implicit
 
 ### Getting Started
-OAuth2 server uses [OpenApi](https://www.openapis.org/) standard for its documentation. This makes it easy to get started.
+Bawabu uses [OpenApi](https://www.openapis.org/) standard for its documentation. This makes it easy to get started.
 The only required dependency is [docker-compose](https://docs.docker.com/compose/).
+In order to get started;
 
-1. Clone the project
-
-2. Change your current directory
-    ```
-    $ cd  docker-compose
-    ```
+1. Clone the project, [bawabu-docker](https://github.com/ngendah/bawabu-docker)
 
 2. Build and run the app,
    ```
