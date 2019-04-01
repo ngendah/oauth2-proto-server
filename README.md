@@ -32,7 +32,7 @@ Seed values for the development server are available [here](./db/seeds.rb)
 
 
 The server is still in active development and is some few steps away from being completely ready for production.
-However, a minimal production deployment is available in the directory `docker-compose`.
+However, a minimal production deployment is available on `bawabu-docker` repository.
 
 ## OAuth 2.0 Reference
 [Framework](https://tools.ietf.org/html/rfc6749)
