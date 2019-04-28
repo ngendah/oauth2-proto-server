@@ -15,7 +15,7 @@ It implements the following grants:
 ### Getting Started
 Bawabu uses [OpenApi](https://www.openapis.org/) standard for its documentation. This makes it easy to get started.
 The only required dependency is [docker-compose](https://docs.docker.com/compose/).
-In order to get started;
+To get started;
 
 1. Clone the project, [bawabu-docker](https://github.com/ngendah/bawabu-docker)
 
