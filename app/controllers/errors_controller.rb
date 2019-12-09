@@ -1,5 +1,6 @@
 class ErrorsController < ApplicationController
-  def routing
-    render :json => { message: 'Bad request' }, :status => 404
+  def index
+    render_err HttpError.new(titles(:api_error),
+                             internal_err(:route_not_found), :bad_request)
   end
 end
